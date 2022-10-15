@@ -49,6 +49,7 @@ public class CacheConfiguration {
             createCache(cm, com.webdevhod.contactpro.domain.Authority.class.getName());
             createCache(cm, com.webdevhod.contactpro.domain.User.class.getName() + ".authorities");
             createCache(cm, com.webdevhod.contactpro.domain.Category.class.getName());
+            createCache(cm, com.webdevhod.contactpro.domain.Contact.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

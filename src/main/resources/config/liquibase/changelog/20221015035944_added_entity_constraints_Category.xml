@@ -13,5 +13,17 @@
                                  constraintName="fk_category__app_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="category_id"
+                                 baseTableName="rel_category__contact"
+                                 constraintName="fk_rel_category__contact__category_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="category"/>
+
+        <addForeignKeyConstraint baseColumnNames="contact_id"
+                                 baseTableName="rel_category__contact"
+                                 constraintName="fk_rel_category__contact__contact_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="contact"/>
     </changeSet>
 </databaseChangeLog>

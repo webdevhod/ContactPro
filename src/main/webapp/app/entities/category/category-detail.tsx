@@ -34,6 +34,17 @@ export const CategoryDetail = () => {
           <dd>{categoryEntity.name}</dd>
           <dt>App User</dt>
           <dd>{categoryEntity.appUser ? categoryEntity.appUser.login : ''}</dd>
+          <dt>Contact</dt>
+          <dd>
+            {categoryEntity.contacts
+              ? categoryEntity.contacts.map((val, i) => (
+                  <span key={val.id}>
+                    <a>{val.id}</a>
+                    {categoryEntity.contacts && i === categoryEntity.contacts.length - 1 ? '' : ', '}
+                  </span>
+                ))
+              : null}
+          </dd>
         </dl>
         <Button tag={Link} to="/category" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IUser } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { IContact } from 'app/shared/model/contact.model';
+import { getEntities as getContacts } from 'app/entities/contact/contact.reducer';
 import { ICategory } from 'app/shared/model/category.model';
 import { getEntity, updateEntity, createEntity, reset } from './category.reducer';
 
@@ -22,6 +24,7 @@ export const CategoryUpdate = () => {
   const isNew = id === undefined;
 
   const users = useAppSelector(state => state.userManagement.users);
+  const contacts = useAppSelector(state => state.contact.entities);
   const categoryEntity = useAppSelector(state => state.category.entity);
   const loading = useAppSelector(state => state.category.loading);
   const updating = useAppSelector(state => state.category.updating);
@@ -37,6 +40,7 @@ export const CategoryUpdate = () => {
     }
 
     dispatch(getUsers({}));
+    dispatch(getContacts({}));
   }, []);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ export const CategoryUpdate = () => {
     const entity = {
       ...categoryEntity,
       ...values,
+      contacts: mapIdList(values.contacts),
       appUser: users.find(it => it.id.toString() === values.appUser.toString()),
     };
 
@@ -65,6 +70,7 @@ export const CategoryUpdate = () => {
       : {
           ...categoryEntity,
           appUser: categoryEntity?.appUser?.id,
+          contacts: categoryEntity?.contacts?.map(e => e.id.toString()),
         };
 
   return (
@@ -106,6 +112,16 @@ export const CategoryUpdate = () => {
                   : null}
               </ValidatedField>
               <FormText>This field is required.</FormText>
+              <ValidatedField label="Contact" id="category-contact" data-cy="contact" type="select" multiple name="contacts">
+                <option value="" key="0" />
+                {contacts
+                  ? contacts.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.id}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/category" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

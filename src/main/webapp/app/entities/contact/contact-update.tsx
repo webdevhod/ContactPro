@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IUser } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { ICategory } from 'app/shared/model/category.model';
+import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { IContact } from 'app/shared/model/contact.model';
 import { States } from 'app/shared/model/enumerations/states.model';
 import { getEntity, updateEntity, createEntity, reset } from './contact.reducer';
@@ -23,6 +25,7 @@ export const ContactUpdate = () => {
   const isNew = id === undefined;
 
   const users = useAppSelector(state => state.userManagement.users);
+  const categories = useAppSelector(state => state.category.entities);
   const contactEntity = useAppSelector(state => state.contact.entity);
   const loading = useAppSelector(state => state.contact.loading);
   const updating = useAppSelector(state => state.contact.updating);
@@ -39,6 +42,7 @@ export const ContactUpdate = () => {
     }
 
     dispatch(getUsers({}));
+    dispatch(getCategories({}));
   }, []);
 
   useEffect(() => {

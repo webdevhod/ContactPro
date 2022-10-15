@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { IUser } from 'app/shared/model/user.model';
+import { ICategory } from 'app/shared/model/category.model';
 import { States } from 'app/shared/model/enumerations/states.model';
 
 export interface IContact {
@@ -20,6 +21,7 @@ export interface IContact {
   imageContentType?: string | null;
   image?: string | null;
   appUser?: IUser;
+  categories?: ICategory[] | null;
 }
 
 export const defaultValue: Readonly<IContact> = {};

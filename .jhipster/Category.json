@@ -23,6 +23,14 @@
       "relationshipName": "appUser",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": ["required"]
+    },
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "contact",
+      "otherEntityRelationshipName": "category",
+      "ownerSide": true,
+      "relationshipName": "contact",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

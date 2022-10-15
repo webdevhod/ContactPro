@@ -1,9 +1,12 @@
 package com.webdevhod.contactpro.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.webdevhod.contactpro.domain.enumeration.States;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import org.hibernate.annotations.Cache;
@@ -90,6 +93,11 @@ public class Contact implements Serializable {
     @ManyToOne(optional = false)
     @NotNull
     private User appUser;
+
+    @ManyToMany(mappedBy = "contacts")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "appUser", "contacts" }, allowSetters = true)
+    private Set<Category> categories = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -311,6 +319,37 @@ public class Contact implements Serializable {
 
     public Contact appUser(User user) {
         this.setAppUser(user);
+        return this;
+    }
+
+    public Set<Category> getCategories() {
+        return this.categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        if (this.categories != null) {
+            this.categories.forEach(i -> i.removeContact(this));
+        }
+        if (categories != null) {
+            categories.forEach(i -> i.addContact(this));
+        }
+        this.categories = categories;
+    }
+
+    public Contact categories(Set<Category> categories) {
+        this.setCategories(categories);
+        return this;
+    }
+
+    public Contact addCategory(Category category) {
+        this.categories.add(category);
+        category.getContacts().add(this);
+        return this;
+    }
+
+    public Contact removeCategory(Category category) {
+        this.categories.remove(category);
+        category.getContacts().remove(this);
         return this;
     }
 

@@ -93,6 +93,13 @@
       "relationshipName": "appUser",
       "relationshipType": "many-to-one",
       "relationshipValidateRules": ["required"]
+    },
+    {
+      "otherEntityName": "category",
+      "otherEntityRelationshipName": "contact",
+      "ownerSide": false,
+      "relationshipName": "category",
+      "relationshipType": "many-to-many"
     }
   ],
   "service": "serviceImpl"

@@ -1,6 +1,9 @@
 package com.webdevhod.contactpro.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import org.hibernate.annotations.Cache;
@@ -31,6 +34,16 @@ public class Category implements Serializable {
     @ManyToOne(optional = false)
     @NotNull
     private User appUser;
+
+    @ManyToMany
+    @JoinTable(
+        name = "rel_category__contact",
+        joinColumns = @JoinColumn(name = "category_id"),
+        inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "appUser", "categories" }, allowSetters = true)
+    private Set<Contact> contacts = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -70,6 +83,31 @@ public class Category implements Serializable {
 
     public Category appUser(User user) {
         this.setAppUser(user);
+        return this;
+    }
+
+    public Set<Contact> getContacts() {
+        return this.contacts;
+    }
+
+    public void setContacts(Set<Contact> contacts) {
+        this.contacts = contacts;
+    }
+
+    public Category contacts(Set<Contact> contacts) {
+        this.setContacts(contacts);
+        return this;
+    }
+
+    public Category addContact(Contact contact) {
+        this.contacts.add(contact);
+        contact.getCategories().add(this);
+        return this;
+    }
+
+    public Category removeContact(Contact contact) {
+        this.contacts.remove(contact);
+        contact.getCategories().remove(this);
         return this;
     }
 

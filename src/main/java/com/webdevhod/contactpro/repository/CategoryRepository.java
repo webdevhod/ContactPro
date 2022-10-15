@@ -11,22 +11,25 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Spring Data JPA repository for the Category entity.
+ *
+ * When extending this class, extend CategoryRepositoryWithBagRelationships too.
+ * For more information refer to https://github.com/jhipster/generator-jhipster/issues/17990.
  */
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends CategoryRepositoryWithBagRelationships, JpaRepository<Category, Long> {
     @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findByAppUserIsCurrentUser();
 
     default Optional<Category> findOneWithEagerRelationships(Long id) {
-        return this.findOneWithToOneRelationships(id);
+        return this.fetchBagRelationships(this.findOneWithToOneRelationships(id));
     }
 
     default List<Category> findAllWithEagerRelationships() {
-        return this.findAllWithToOneRelationships();
+        return this.fetchBagRelationships(this.findAllWithToOneRelationships());
     }
 
     default Page<Category> findAllWithEagerRelationships(Pageable pageable) {
-        return this.findAllWithToOneRelationships(pageable);
+        return this.fetchBagRelationships(this.findAllWithToOneRelationships(pageable));
     }
 
     @Query(

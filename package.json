@@ -78,6 +78,7 @@
     "@reduxjs/toolkit": "1.8.5",
     "axios": "0.27.2",
     "bootstrap": "5.2.0",
+    "bootstrap-icons": "^1.9.1",
     "bootswatch": "5.2.0",
     "dayjs": "1.11.5",
     "lodash": "4.17.21",

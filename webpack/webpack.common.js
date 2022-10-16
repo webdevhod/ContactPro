@@ -66,6 +66,18 @@ module.exports = async options => {
             include: [utils.root('./src/main/webapp/app')],
             exclude: [utils.root('node_modules')],
           },
+          {
+            test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            include: path.resolve(__dirname, './node_modules/bootstrap-icons/font/fonts'),
+            use: {
+              loader: 'file-loader',
+              options: {
+                name: '[name].[ext]',
+                outputPath: 'webfonts',
+                publicPath: '../webfonts',
+              },
+            },
+          },
           /*
        ,
        Disabled due to https://github.com/jhipster/generator-jhipster/issues/16116

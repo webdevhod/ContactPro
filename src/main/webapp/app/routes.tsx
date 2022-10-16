@@ -29,7 +29,7 @@ const Admin = Loadable({
 
 const AppRoutes = () => {
   return (
-    <div className="view-routes">
+    <>
       <ErrorBoundaryRoutes>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
@@ -68,7 +68,7 @@ const AppRoutes = () => {
         />
         <Route path="*" element={<PageNotFound />} />
       </ErrorBoundaryRoutes>
-    </div>
+    </>
   );
 };
 

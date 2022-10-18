@@ -143,7 +143,7 @@ export const Category = () => {
                     <td>{category.name}</td>
                     <td>{category.appUser ? category.appUser.login : ''}</td>
                     <td className="text-end">
-                      <div className="btn-group flex-btn-group-container">
+                      <div className="btn-group flex-btn-group-container gap-2">
                         <Button tag={Link} to={`/category/${category.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                         </Button>

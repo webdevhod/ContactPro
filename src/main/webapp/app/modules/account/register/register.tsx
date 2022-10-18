@@ -18,8 +18,8 @@ export const RegisterPage = () => {
     []
   );
 
-  const handleValidSubmit = ({ username, email, firstPassword }) => {
-    dispatch(handleRegister({ login: username, email, password: firstPassword, langKey: 'en' }));
+  const handleValidSubmit = ({ username, firstName, lastName, email, firstPassword }) => {
+    dispatch(handleRegister({ login: username, firstName, lastName, email, password: firstPassword, langKey: 'en' }));
   };
 
   const updatePassword = event => setPassword(event.target.value);
@@ -45,19 +45,28 @@ export const RegisterPage = () => {
         <Col md="8">
           <ValidatedForm id="register-form" onSubmit={handleValidSubmit}>
             <ValidatedField
-              name="username"
-              label="Username"
-              placeholder="Your username"
+              name="firstName"
+              label="First Name"
+              id="firstName"
+              placeholder="Your first name"
               validate={{
-                required: { value: true, message: 'Your username is required.' },
-                pattern: {
-                  value: /^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/,
-                  message: 'Your username is invalid.',
-                },
-                minLength: { value: 1, message: 'Your username is required to be at least 1 character.' },
-                maxLength: { value: 50, message: 'Your username cannot be longer than 50 characters.' },
+                required: { value: true, message: 'Your first name is required.' },
+                minLength: { value: 1, message: 'Your first name is required to be at least 1 character' },
+                maxLength: { value: 50, message: 'Your first name cannot be longer than 50 characters' },
               }}
-              data-cy="username"
+              data-cy="firstname"
+            />
+            <ValidatedField
+              name="lastName"
+              label="Last Name"
+              id="lastName"
+              placeholder="Your last name"
+              validate={{
+                required: { value: true, message: 'Your last name is required.' },
+                minLength: { value: 1, message: 'Your last name is required to be at least 1 character' },
+                maxLength: { value: 50, message: 'Your last name cannot be longer than 50 characters' },
+              }}
+              data-cy="lastname"
             />
             <ValidatedField
               name="email"
@@ -71,6 +80,21 @@ export const RegisterPage = () => {
                 validate: v => isEmail(v) || 'Your email is invalid.',
               }}
               data-cy="email"
+            />
+            <ValidatedField
+              name="username"
+              label="Username"
+              placeholder="Your username"
+              validate={{
+                required: { value: true, message: 'Your username is required.' },
+                pattern: {
+                  value: /^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/,
+                  message: 'Your username is invalid.',
+                },
+                minLength: { value: 1, message: 'Your username is required to be at least 1 character.' },
+                maxLength: { value: 50, message: 'Your username cannot be longer than 50 characters.' },
+              }}
+              data-cy="username"
             />
             <ValidatedField
               name="firstPassword"

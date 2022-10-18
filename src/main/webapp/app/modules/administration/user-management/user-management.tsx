@@ -169,7 +169,7 @@ export const UserManagement = () => {
                 ) : null}
               </td>
               <td className="text-end">
-                <div className="btn-group flex-btn-group-container">
+                <div className="btn-group flex-btn-group-container gap-2">
                   <Button tag={Link} to={user.login} color="info" size="sm">
                     <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                   </Button>

@@ -211,7 +211,7 @@ export const Contact = () => {
                     </td>
                     <td>{contact.appUser ? contact.appUser.login : ''}</td>
                     <td className="text-end">
-                      <div className="btn-group flex-btn-group-container">
+                      <div className="btn-group flex-btn-group-container gap-2">
                         <Button tag={Link} to={`/contact/${contact.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
                         </Button>

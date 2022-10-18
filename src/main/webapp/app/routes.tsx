@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 import Loadable from 'react-loadable';
 
 import Login from 'app/modules/login/login';
@@ -28,8 +28,10 @@ const Admin = Loadable({
 });
 
 const AppRoutes = () => {
+  const { pathname } = useLocation();
+
   return (
-    <>
+    <section className={`${pathname == '/' || pathname == '/contact' ? 'container-fluid' : 'container'} h-100`} id="app-view-container">
       <ErrorBoundaryRoutes>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
@@ -68,7 +70,7 @@ const AppRoutes = () => {
         />
         <Route path="*" element={<PageNotFound />} />
       </ErrorBoundaryRoutes>
-    </>
+    </section>
   );
 };
 

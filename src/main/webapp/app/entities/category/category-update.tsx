@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText } from 'reactstrap';
-import { isNumber, ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect } from 'react';
+import { ValidatedField, ValidatedForm } from 'react-jhipster';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Button, Col, FormText, Row } from 'reactstrap';
 
-import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
-import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { mapIdList } from 'app/shared/util/entity-utils';
 
-import { IUser } from 'app/shared/model/user.model';
-import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
-import { IContact } from 'app/shared/model/contact.model';
 import { getEntities as getContacts } from 'app/entities/contact/contact.reducer';
-import { ICategory } from 'app/shared/model/category.model';
-import { getEntity, updateEntity, createEntity, reset } from './category.reducer';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { createEntity, getEntity, updateEntity } from './category.reducer';
 
 export const CategoryUpdate = () => {
   const dispatch = useAppDispatch();

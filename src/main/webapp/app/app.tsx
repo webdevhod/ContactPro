@@ -45,11 +45,9 @@ export const App = () => {
         />
       </ErrorBoundary>
       <main className="content" id="mainHero">
-        <section className="container-fluid h-100" id="app-view-container">
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
-        </section>
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </main>
       <Footer />
     </BrowserRouter>

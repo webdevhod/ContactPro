@@ -7,23 +7,14 @@ const Footer = () => (
       <div className="col">
         <div className="row align-items-center gy-2">
           <div className="col d-flex justify-content-center justify-content-md-start order-last order-md-first copyright">
-            &copy; 2022 Dane Whitman All Rights Reserved
+            &copy; 2022 WebDevHod All Rights Reserved
           </div>
           <div className="col d-flex justify-content-center">
             <img src="content/img/ContactPro.png" height="50" />
           </div>
           <div className="col-12 col-md d-flex justify-content-center justify-content-md-end">
-            <a href="#" className="socialicons">
+            <a href="https://www.linkedin.com/in/daniel-ho-6305193b/" className="socialicons" target="_blank">
               <i className="bi bi-linkedin p-2 "></i>
-            </a>
-            <a href="#" className="socialicons">
-              <i className="bi bi-twitter p-2"></i>
-            </a>
-            <a href="#" className="socialicons">
-              <i className="bi bi-youtube p-2"></i>
-            </a>
-            <a href="#" className="socialicons">
-              <i className="bi bi-instagram p-2 "></i>
             </a>
           </div>
         </div>

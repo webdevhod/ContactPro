@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText } from 'reactstrap';
-import { isNumber, ValidatedField, ValidatedForm, ValidatedBlobField } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect } from 'react';
+import { ValidatedBlobField, ValidatedField, ValidatedForm } from 'react-jhipster';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Button, Col, FormText, Row } from 'reactstrap';
 
-import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
-import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 
-import { IUser } from 'app/shared/model/user.model';
-import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
-import { ICategory } from 'app/shared/model/category.model';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
-import { IContact } from 'app/shared/model/contact.model';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { States } from 'app/shared/model/enumerations/states.model';
-import { getEntity, updateEntity, createEntity, reset } from './contact.reducer';
+import { createEntity, getEntity, updateEntity } from './contact.reducer';
 
 export const ContactUpdate = () => {
   const dispatch = useAppDispatch();

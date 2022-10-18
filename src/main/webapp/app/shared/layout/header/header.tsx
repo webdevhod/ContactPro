@@ -1,12 +1,14 @@
 // import './header.scss';
 
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 // import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
 // import LoadingBar from 'react-redux-loading-bar';
 
 // import { Home, Brand } from './header-components';
-// import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
+import { AdminMenu, EntitiesMenu, AccountMenu } from '../menus';
+// import { AccountMenu } from '../menus';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -17,18 +19,19 @@ export interface IHeaderProps {
 }
 
 const Header = (props: IHeaderProps) => {
-  // const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const { pathname } = useLocation();
 
   /* jhipster-needle-add-element-to-menu - JHipster will add new menu items here */
 
   return (
     <nav className="navbar navbar-expand-md navbar-light fixed-top border-bottom border-light navShadow">
       <div className="container-fluid">
-        <a className="navbar-brand" href="#">
+        <Link className="navbar-brand" to="/">
           <img src="content/img/ContactPro.png" height="45" />
-        </a>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -37,38 +40,54 @@ const Header = (props: IHeaderProps) => {
           aria-controls="navbarCollapse"
           aria-expanded="false"
           aria-label="Toggle navigation"
+          onClick={toggleMenu}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <ul className="navbar-nav me-auto mb-2 mb-md-0">
             <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="index.html">
+              <Link className={`nav-link${pathname == '/' ? ' active' : ''}`} aria-current="page" to="/">
                 Home
-              </a>
+              </Link>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/contactlist.html">
-                Contacts
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/category.html">
-                Categories
-              </a>
-            </li>
+            {props.isAuthenticated == true ? (
+              <>
+                <li className="nav-item">
+                  <Link className={`nav-link${pathname == '/contact' ? ' active' : ''}`} to="/contact">
+                    Contacts
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className={`nav-link${pathname == '/category' ? ' active' : ''}`} to="/category">
+                    Categories
+                  </Link>
+                </li>
+              </>
+            ) : null}
           </ul>
           <ul className="navbar-nav">
-            <li className="nav-item me-2 mb-2">
-              <a type="button" className="btn btn-primary rounded-pill btnlinks" href="#">
-                Register
-              </a>
-            </li>
-            <li className="nav-item me-2">
-              <a type="button" className="btn btn-outline-primary rounded-pill btnlinks" href="#">
-                Login
-              </a>
-            </li>
+            {props.isAuthenticated == false ? (
+              <>
+                <li className="nav-item me-2 mb-2">
+                  <Link type="button" className="btn btn-primary rounded-pill btnlinks" to="/account/register">
+                    Register
+                  </Link>
+                </li>
+                <li className="nav-item me-2">
+                  <Link type="button" className="btn btn-outline-primary rounded-pill btnlinks" to="/login">
+                    Login
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                {props.isAuthenticated && props.isAdmin && (
+                  <AdminMenu showOpenAPI={props.isOpenAPIEnabled} showDatabase={!props.isInProduction} />
+                )}
+                <AccountMenu isAuthenticated={props.isAuthenticated} />
+              </>
+            )}
           </ul>
         </div>
       </div>

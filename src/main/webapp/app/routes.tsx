@@ -31,7 +31,7 @@ const AppRoutes = () => {
   const { pathname } = useLocation();
 
   return (
-    <section className={`${pathname == '/' || pathname == '/contact' ? 'container-fluid' : 'container'} h-100`} id="app-view-container">
+    <section className={`${pathname == '/' ? 'container-fluid' : 'container'} h-100`} id="app-view-container">
       <ErrorBoundaryRoutes>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
-import { Row, Col, Alert, Button } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 
 import PasswordStrengthBar from 'app/shared/layout/password/password-strength-bar';
@@ -10,6 +11,7 @@ import { handleRegister, reset } from './register.reducer';
 export const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
+  let navigate = useNavigate();
 
   useEffect(
     () => () => {
@@ -29,6 +31,7 @@ export const RegisterPage = () => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
+      navigate('/');
     }
   }, [successMessage]);
 

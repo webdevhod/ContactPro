@@ -1,11 +1,16 @@
 package com.webdevhod.contactpro.web.rest;
 
 import com.webdevhod.contactpro.domain.Contact;
+import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.ContactRepository;
+import com.webdevhod.contactpro.security.SecurityUtils;
 import com.webdevhod.contactpro.service.ContactService;
+import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -43,9 +47,12 @@ public class ContactResource {
 
     private final ContactRepository contactRepository;
 
-    public ContactResource(ContactService contactService, ContactRepository contactRepository) {
+    private final UserService userService;
+
+    public ContactResource(ContactService contactService, ContactRepository contactRepository, UserService userService) {
         this.contactService = contactService;
         this.contactRepository = contactRepository;
+        this.userService = userService;
     }
 
     /**
@@ -56,11 +63,19 @@ public class ContactResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/contacts")
-    public ResponseEntity<Contact> createContact(@Valid @RequestBody Contact contact) throws URISyntaxException {
+    public ResponseEntity<Contact> createContact(@RequestBody Contact contact) throws URISyntaxException {
         log.debug("REST request to save Contact : {}", contact);
         if (contact.getId() != null) {
             throw new BadRequestAlertException("A new contact cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        contact.setAppUser(user);
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        contact.setCreated(now);
+        contact.setUpdated(now);
+
         Contact result = contactService.save(contact);
         return ResponseEntity
             .created(new URI("/api/contacts/" + result.getId()))
@@ -94,6 +109,9 @@ public class ContactResource {
         if (!contactRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        contact.setUpdated(now);
 
         Contact result = contactService.update(contact);
         return ResponseEntity

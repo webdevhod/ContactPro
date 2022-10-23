@@ -17,6 +17,9 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username}")
     List<Contact> findByAppUserIsCurrentUser();
 
+    @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username}")
+    Page<Contact> findByAppUserIsCurrentUser(Pageable pageable);
+
     default Optional<Contact> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }
@@ -30,14 +33,14 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     }
 
     @Query(
-        value = "select distinct contact from Contact contact left join fetch contact.appUser",
+        value = "select distinct contact from Contact contact where contact.appUser.login = ?#{principal.username}",
         countQuery = "select count(distinct contact) from Contact contact"
     )
     Page<Contact> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select distinct contact from Contact contact left join fetch contact.appUser")
+    @Query("select distinct contact from Contact contact where contact.appUser.login = ?#{principal.username}")
     List<Contact> findAllWithToOneRelationships();
 
-    @Query("select contact from Contact contact left join fetch contact.appUser where contact.id =:id")
+    @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username} and contact.id =:id")
     Optional<Contact> findOneWithToOneRelationships(@Param("id") Long id);
 }

@@ -3,6 +3,7 @@ package com.webdevhod.contactpro.service.impl;
 import com.webdevhod.contactpro.domain.Category;
 import com.webdevhod.contactpro.repository.CategoryRepository;
 import com.webdevhod.contactpro.service.CategoryService;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,16 @@ public class CategoryServiceImpl implements CategoryService {
     public Page<Category> findAll(Pageable pageable) {
         log.debug("Request to get all Categories");
         return categoryRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Category> findByAppUserIsCurrentUser() {
+        return categoryRepository.findByAppUserIsCurrentUser();
+    }
+
+    @Override
+    public Page<Category> findByAppUserIsCurrentUser(Pageable pageable) {
+        return categoryRepository.findByAppUserIsCurrentUser(pageable);
     }
 
     public Page<Category> findAllWithEagerRelationships(Pageable pageable) {

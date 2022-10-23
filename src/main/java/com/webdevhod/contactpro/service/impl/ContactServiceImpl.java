@@ -3,6 +3,7 @@ package com.webdevhod.contactpro.service.impl;
 import com.webdevhod.contactpro.domain.Contact;
 import com.webdevhod.contactpro.repository.ContactRepository;
 import com.webdevhod.contactpro.service.ContactService;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,16 @@ public class ContactServiceImpl implements ContactService {
     public Page<Contact> findAll(Pageable pageable) {
         log.debug("Request to get all Contacts");
         return contactRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<Contact> findByAppUserIsCurrentUser() {
+        return contactRepository.findByAppUserIsCurrentUser();
+    }
+
+    @Override
+    public Page<Contact> findByAppUserIsCurrentUser(Pageable pageable) {
+        return contactRepository.findByAppUserIsCurrentUser(pageable);
     }
 
     public Page<Contact> findAllWithEagerRelationships(Pageable pageable) {

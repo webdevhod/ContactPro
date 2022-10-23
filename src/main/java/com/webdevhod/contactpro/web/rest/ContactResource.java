@@ -173,7 +173,7 @@ public class ContactResource {
         if (eagerload) {
             page = contactService.findAllWithEagerRelationships(pageable);
         } else {
-            page = contactService.findAll(pageable);
+            page = contactService.findByAppUserIsCurrentUser(pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

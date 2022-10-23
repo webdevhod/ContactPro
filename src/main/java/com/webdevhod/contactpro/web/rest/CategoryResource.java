@@ -1,8 +1,11 @@
 package com.webdevhod.contactpro.web.rest;
 
 import com.webdevhod.contactpro.domain.Category;
+import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.CategoryRepository;
+import com.webdevhod.contactpro.security.SecurityUtils;
 import com.webdevhod.contactpro.service.CategoryService;
+import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,9 +46,12 @@ public class CategoryResource {
 
     private final CategoryRepository categoryRepository;
 
-    public CategoryResource(CategoryService categoryService, CategoryRepository categoryRepository) {
+    private final UserService userService;
+
+    public CategoryResource(CategoryService categoryService, CategoryRepository categoryRepository, UserService userService) {
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     /**
@@ -61,6 +67,8 @@ public class CategoryResource {
         if (category.getId() != null) {
             throw new BadRequestAlertException("A new category cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        category.setAppUser(user);
         Category result = categoryService.save(category);
         return ResponseEntity
             .created(new URI("/api/categories/" + result.getId()))
@@ -155,7 +163,7 @@ public class CategoryResource {
         if (eagerload) {
             page = categoryService.findAllWithEagerRelationships(pageable);
         } else {
-            page = categoryService.findAll(pageable);
+            page = categoryService.findByAppUserIsCurrentUser(pageable);
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

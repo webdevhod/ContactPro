@@ -20,6 +20,9 @@ public interface CategoryRepository extends CategoryRepositoryWithBagRelationshi
     @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findByAppUserIsCurrentUser();
 
+    @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
+    Page<Category> findByAppUserIsCurrentUser(Pageable pageable);
+
     default Optional<Category> findOneWithEagerRelationships(Long id) {
         return this.fetchBagRelationships(this.findOneWithToOneRelationships(id));
     }
@@ -33,14 +36,14 @@ public interface CategoryRepository extends CategoryRepositoryWithBagRelationshi
     }
 
     @Query(
-        value = "select distinct category from Category category left join fetch category.appUser",
+        value = "select distinct category from Category category where category.appUser.login = ?#{principal.username}",
         countQuery = "select count(distinct category) from Category category"
     )
     Page<Category> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select distinct category from Category category left join fetch category.appUser")
+    @Query("select distinct category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findAllWithToOneRelationships();
 
-    @Query("select category from Category category left join fetch category.appUser where category.id =:id")
+    @Query("select category from Category category where category.appUser.login = ?#{principal.username AND category.id =:id}")
     Optional<Category> findOneWithToOneRelationships(@Param("id") Long id);
 }

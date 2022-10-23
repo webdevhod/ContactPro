@@ -8,6 +8,7 @@ import { Button } from 'reactstrap';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
+import { ICategory } from 'app/shared/model/category.model';
 import { States } from 'app/shared/model/enumerations/states.model';
 import { createEntity, getEntity, updateEntity } from './contact.reducer';
 
@@ -321,13 +322,11 @@ export const ContactUpdate = () => {
                     data-cy="categories"
                     type="select"
                   >
-                    {categories.map(c => {
-                      return (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      );
-                    })}
+                    {categories.map((c: ICategory) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                   </ValidatedField>
                   <ValidatedField
                     className="col-12 col-lg-6"

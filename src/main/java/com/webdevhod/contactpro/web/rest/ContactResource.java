@@ -4,6 +4,7 @@ import com.webdevhod.contactpro.domain.Contact;
 import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.ContactRepository;
 import com.webdevhod.contactpro.security.SecurityUtils;
+import com.webdevhod.contactpro.service.CategoryService;
 import com.webdevhod.contactpro.service.ContactService;
 import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
@@ -14,12 +15,14 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -45,14 +48,22 @@ public class ContactResource {
 
     private final ContactService contactService;
 
+    private final CategoryService categoryService;
+
     private final ContactRepository contactRepository;
 
     private final UserService userService;
 
-    public ContactResource(ContactService contactService, ContactRepository contactRepository, UserService userService) {
+    public ContactResource(
+        ContactService contactService,
+        ContactRepository contactRepository,
+        UserService userService,
+        CategoryService categoryService
+    ) {
         this.contactService = contactService;
         this.contactRepository = contactRepository;
         this.userService = userService;
+        this.categoryService = categoryService;
     }
 
     /**
@@ -166,14 +177,23 @@ public class ContactResource {
     @GetMapping("/contacts")
     public ResponseEntity<List<Contact>> getAllContacts(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload,
+        @RequestParam(required = false, defaultValue = "0") Long categoryId
     ) {
         log.debug("REST request to get a page of Contacts");
         Page<Contact> page;
-        if (eagerload) {
-            page = contactService.findAllWithEagerRelationships(pageable);
+        if (categoryId == 0) {
+            if (eagerload) {
+                page = contactService.findAllWithEagerRelationships(pageable);
+            } else {
+                page = contactService.findByAppUserIsCurrentUser(pageable);
+            }
         } else {
-            page = contactService.findByAppUserIsCurrentUser(pageable);
+            Set<Contact> contactSet = categoryService.findById(categoryId).get().getContacts();
+            List<Contact> contacts = contactSet.stream().toList();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), contacts.size());
+            page = new PageImpl<>(contacts.subList(start, end), pageable, contacts.size());
         }
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());

@@ -35,7 +35,7 @@ public class Category implements Serializable {
     @NotNull
     private User appUser;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "rel_category__contact",
         joinColumns = @JoinColumn(name = "category_id"),

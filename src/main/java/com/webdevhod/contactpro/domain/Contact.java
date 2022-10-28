@@ -141,7 +141,7 @@ public class Contact implements Serializable {
     }
 
     public String getFullName() {
-        return String.format("%s %s", this.firstName, this.lastName);
+        return this.fullName;
     }
 
     public Contact fullName(String fullName) {
@@ -150,7 +150,7 @@ public class Contact implements Serializable {
     }
 
     public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.fullName = String.format("%s %s", this.firstName, this.lastName);
     }
 
     public String getAddress1() {

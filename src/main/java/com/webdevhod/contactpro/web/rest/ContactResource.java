@@ -10,6 +10,7 @@ import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -178,23 +179,36 @@ public class ContactResource {
     public ResponseEntity<List<Contact>> getAllContacts(
         @org.springdoc.api.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false, defaultValue = "false") boolean eagerload,
-        @RequestParam(required = false, defaultValue = "0") Long categoryId
+        @RequestParam(required = false, defaultValue = "0") Long categoryId,
+        @RequestParam(required = false, defaultValue = "") String searchTerm
     ) {
         log.debug("REST request to get a page of Contacts");
         Page<Contact> page;
-        if (categoryId == 0) {
+        if (categoryId == 0 && searchTerm.isBlank()) {
             if (eagerload) {
                 page = contactService.findAllWithEagerRelationships(pageable);
             } else {
                 page = contactService.findByAppUserIsCurrentUser(pageable);
             }
         } else {
-            Set<Contact> contactSet = categoryService.findById(categoryId).get().getContacts();
-            List<Contact> contacts = contactSet.stream().toList();
+            List<Contact> contacts;
+
+            if (!searchTerm.isBlank()) {
+                String searchTermDecoded = java.net.URLDecoder.decode(searchTerm, StandardCharsets.UTF_8);
+                searchTermDecoded = String.format("%%%s%%", searchTermDecoded.replace(" ", "%").toLowerCase());
+                System.out.println("searchTermDecoded");
+                System.out.println(searchTermDecoded);
+                contacts = contactService.findByFullNameContaining(searchTermDecoded);
+            } else {
+                Set<Contact> contactSet = categoryService.findById(categoryId).get().getContacts();
+                contacts = contactSet.stream().toList();
+            }
+
             int start = (int) pageable.getOffset();
             int end = Math.min((start + pageable.getPageSize()), contacts.size());
-            page = new PageImpl<>(contacts.subList(start, end), pageable, contacts.size());
+            page = new PageImpl<>(contacts.subList(start, end), pageable, contacts.size() > 0 ? contacts.size() : 1);
         }
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }

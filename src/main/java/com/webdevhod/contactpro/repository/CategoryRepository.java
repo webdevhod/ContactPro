@@ -44,6 +44,6 @@ public interface CategoryRepository extends CategoryRepositoryWithBagRelationshi
     @Query("select distinct category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findAllWithToOneRelationships();
 
-    @Query("select category from Category category where category.appUser.login = ?#{principal.username AND category.id =:id}")
+    @Query("select category from Category category where category.appUser.login = ?#{principal.username AND category.id = :id}")
     Optional<Category> findOneWithToOneRelationships(@Param("id") Long id);
 }

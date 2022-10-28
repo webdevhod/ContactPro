@@ -21,12 +21,18 @@ const apiUrl = 'api/contacts';
 
 // Actions
 
-export const getEntities = createAsyncThunk('contact/fetch_entity_list', async ({ page, size, sort, categoryId }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${
-    sort ? `?categoryId=${categoryId}&page=${page}&size=${size}&sort=lastName,${sort}&sort=firstName,${sort}&` : '?'
-  }cacheBuster=${new Date().getTime()}`;
-  return axios.get<IContact[]>(requestUrl);
-});
+export const getEntities = createAsyncThunk(
+  'contact/fetch_entity_list',
+  async ({ page, size, sort, categoryId, searchTerm }: IQueryParams) => {
+    const searchTermEncoded = encodeURIComponent(searchTerm);
+    const requestUrl = `${apiUrl}${
+      sort
+        ? `?categoryId=${categoryId}&searchTerm=${searchTermEncoded}&page=${page}&size=${size}&sort=lastName,${sort}&sort=firstName,${sort}&`
+        : '?'
+    }cacheBuster=${new Date().getTime()}`;
+    return axios.get<IContact[]>(requestUrl);
+  }
+);
 
 export const getEntity = createAsyncThunk(
   'contact/fetch_entity',

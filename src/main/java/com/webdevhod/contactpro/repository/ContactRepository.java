@@ -28,6 +28,11 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
         return this.findAllWithToOneRelationships();
     }
 
+    @Query(
+        "select contact from Contact contact where contact.appUser.login = ?#{principal.username} and (lower(contact.fullName) like :likePattern or lower(contact.lastName || ' ' || contact.firstName) like :likePattern)"
+    )
+    List<Contact> findByFullNameContaining(@Param("likePattern") String likePattern);
+
     default Page<Contact> findAllWithEagerRelationships(Pageable pageable) {
         return this.findAllWithToOneRelationships(pageable);
     }

@@ -42,6 +42,8 @@ public interface ContactService {
      */
     Page<Contact> findAll(Pageable pageable);
 
+    List<Contact> findByFullNameContaining(String likePattern);
+
     List<Contact> findByAppUserIsCurrentUser();
     Page<Contact> findByAppUserIsCurrentUser(Pageable pageable);
 

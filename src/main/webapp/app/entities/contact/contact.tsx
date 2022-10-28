@@ -17,6 +17,7 @@ import { ICategory } from 'app/shared/model/category.model';
 // import { IContact } from 'app/shared/model/contact.model';
 import { getEntities, reset } from './contact.reducer';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
+import { IContact } from 'app/shared/model/contact.model';
 
 export const Contact = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +31,7 @@ export const Contact = () => {
   const [sorting, setSorting] = useState(false);
 
   const [categoryId, setCategoryId] = useState('0');
+  const [searchTerm, setSearchTerm] = useState('');
   const categories = useAppSelector(state => state.category.entities);
   const contactList = useAppSelector(state => state.contact.entities);
   const loading = useAppSelector(state => state.contact.loading);
@@ -42,6 +44,7 @@ export const Contact = () => {
     dispatch(
       getEntities({
         categoryId,
+        searchTerm,
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
@@ -117,8 +120,26 @@ export const Contact = () => {
         <div className="col-12 col-md-4 sideNav px-3 py-4">
           <form>
             <div className="input-group">
-              <input className="form-control" type="search" name="searchString" placeholder="Search Term" />
-              <input type="submit" className="btn btn-outline-primary" value="Search" />
+              <input
+                className="form-control"
+                type="search"
+                name="searchString"
+                placeholder="Search Term"
+                value={searchTerm}
+                onChange={e => {
+                  setSearchTerm(e.target.value);
+                }}
+              />
+              <input
+                type="submit"
+                className="btn btn-outline-primary"
+                value="Search"
+                onClick={e => {
+                  e.preventDefault();
+                  // setClicked(true);
+                  getAllEntities();
+                }}
+              />
             </div>
           </form>
           <form>
@@ -129,6 +150,7 @@ export const Contact = () => {
                 className="form-control"
                 value={categoryId}
                 onChange={e => {
+                  setSearchTerm('');
                   setCategoryId(e.target.value);
                 }}
               >
@@ -146,8 +168,8 @@ export const Contact = () => {
         </div>
         <div className="col-12 col-md-8">
           <div className="row row-cols-1 g-3">
-            {contactList && contactList.length > 0
-              ? contactList.map((contact, i) => (
+            {contactList != null && contactList.length > 0
+              ? contactList.map((contact: IContact, i: number) => (
                   <div key={i} className="col">
                     <div className="card mb-3">
                       <div className="row g-0">
@@ -197,7 +219,7 @@ export const Contact = () => {
                     </div>
                   </div>
                 ))
-              : !loading && 'No Contacts found'}
+              : !loading && <h4 className="ps-3 pt-2 text-body">No contacts found</h4>}
           </div>
         </div>
       </div>

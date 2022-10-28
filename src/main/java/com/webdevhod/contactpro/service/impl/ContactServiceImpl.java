@@ -105,6 +105,11 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    public List<Contact> findByFullNameContaining(String likePattern) {
+        return contactRepository.findByFullNameContaining(likePattern);
+    }
+
+    @Override
     public List<Contact> findByAppUserIsCurrentUser() {
         return contactRepository.findByAppUserIsCurrentUser();
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Service Interface for managing {@link Contact}.
@@ -69,4 +70,6 @@ public interface ContactService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Optional<Contact> findOneWithEagerRelationships(Long id);
 }

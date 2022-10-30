@@ -28,7 +28,7 @@ export const Contact = () => {
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
   );
-  const [sorting, setSorting] = useState(false);
+  const [sorting, setSorting] = useState(true);
 
   const [categoryId, setCategoryId] = useState('0');
   const [searchTerm, setSearchTerm] = useState('');
@@ -156,7 +156,7 @@ export const Contact = () => {
               >
                 <option value="0">All Contacts</option>
                 {categories.map((c: ICategory) => {
-                  return c.contacts.length > 0 ? (
+                  return c.contacts != null && c.contacts.length > 0 ? (
                     <option key={c.id} value={c.id}>
                       {c.name}
                     </option>
@@ -181,12 +181,12 @@ export const Contact = () => {
                                 : '/content/img/DefaultContactImage.png'
                             }
                             className="square-img rounded-start"
-                            alt={contact.fullName}
+                            alt={`${contact.firstName} ${contact.lastName}`}
                           />
                         </div>
                         <div className="col-md-8">
                           <div className="card-body">
-                            <h5 className="card-title">{contact.fullName}</h5>
+                            <h5 className="card-title">{`${contact.firstName} ${contact.lastName}`}</h5>
                             <div className="card-text">
                               {contact.address1}
                               <br />

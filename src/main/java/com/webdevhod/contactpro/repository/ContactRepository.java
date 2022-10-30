@@ -46,6 +46,11 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("select distinct contact from Contact contact where contact.appUser.login = ?#{principal.username}")
     List<Contact> findAllWithToOneRelationships();
 
-    @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username} and contact.id =:id")
+    @Query(
+        "select contact from Contact contact left join fetch contact.categories where contact.appUser.login = ?#{principal.username} and contact.id =:id"
+    )
     Optional<Contact> findOneWithToOneRelationships(@Param("id") Long id);
+
+    @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username} and contact.id =:id")
+    Optional<Contact> findOne(@Param("id") Long id);
 }

@@ -127,12 +127,17 @@ public class ContactServiceImpl implements ContactService {
     @Transactional(readOnly = true)
     public Optional<Contact> findOne(Long id) {
         log.debug("Request to get Contact : {}", id);
-        return contactRepository.findOneWithEagerRelationships(id);
+        return contactRepository.findOne(id);
     }
 
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Contact : {}", id);
         contactRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Contact> findOneWithEagerRelationships(Long id) {
+        return contactRepository.findOneWithEagerRelationships(id);
     }
 }

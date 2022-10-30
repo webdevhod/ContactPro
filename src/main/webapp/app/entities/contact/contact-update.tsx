@@ -2,6 +2,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { ValidatedBlobField, ValidatedField, ValidatedForm } from 'react-jhipster';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'reactstrap';
@@ -29,21 +30,21 @@ export const ContactUpdate = () => {
   const updateSuccess = useAppSelector(state => state.contact.updateSuccess);
   const statesValues = Object.keys(States);
 
-  // const [categoriesDefault, setCategoriesDefault] = useState([]);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState(null);
-  const [address1, setAddress1] = useState(null);
-  const [address2, setAddress2] = useState(null);
-  const [city, setCity] = useState(null);
-  const [state, setState] = useState(null);
-  const [zipCode, setZipCode] = useState(null);
-  const [birthDate, setBirthDate] = useState(null);
+  const [categoriesSelected, setCategoriesSelected] = useState([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [imageFile, setImageFile] = useState(null);
-  const [imageBase64, setImageBase64] = useState(null);
-  const [image, setImage] = useState(null);
-  const [imageContentType, setImageContentType] = useState(null);
+  const [imageBase64, setImageBase64] = useState('');
+  const [image, setImage] = useState([]);
+  const [imageContentType, setImageContentType] = useState('');
 
   const handleClose = () => {
     navigate('/contact');
@@ -87,20 +88,22 @@ export const ContactUpdate = () => {
   }, [imageFile]);
 
   useEffect(() => {
-    setFirstName(contactEntity.firstName);
-    setLastName(contactEntity.lastName);
-    setEmail(contactEntity.email);
-    setPhoneNumber(contactEntity.phoneNumber);
-    setAddress1(contactEntity.address1);
-    setAddress2(contactEntity.address2);
-    setCity(contactEntity.city);
-    setState(contactEntity.state);
-    setZipCode(contactEntity.zipCode);
-    setBirthDate(contactEntity.birthDate);
-    setImage(contactEntity.image);
-    setImageBase64(contactEntity.image);
-    setImageContentType(contactEntity.imageContentType);
-    (document.getElementById('contact-categories') as HTMLInputElement).multiple = true;
+    setFirstName(contactEntity.firstName || '');
+    setLastName(contactEntity.lastName || '');
+    setEmail(contactEntity.email || '');
+    setPhoneNumber(contactEntity.phoneNumber || '');
+    setAddress1(contactEntity.address1 || '');
+    setAddress2(contactEntity.address2 || '');
+    setCity(contactEntity.city || '');
+    setState(contactEntity.state || '');
+    setZipCode(contactEntity.zipCode || '');
+    setBirthDate(contactEntity.birthDate || '');
+    setImage(contactEntity.image || []);
+    setImageBase64(contactEntity.image || '');
+    setImageContentType(contactEntity.imageContentType || '');
+    setCategoriesSelected(
+      contactEntity.categories != null ? contactEntity.categories.map((c: ICategory) => ({ id: c.id, name: c.name })) : []
+    );
   }, [contactEntity]);
 
   const handleChange = (event, callBack) => {
@@ -122,6 +125,7 @@ export const ContactUpdate = () => {
       birthDate,
       image,
       imageContentType,
+      categories: categoriesSelected,
     };
 
     if (isNew) {
@@ -314,20 +318,24 @@ export const ContactUpdate = () => {
                       handleChange(e, setZipCode);
                     }}
                   />
-                  <ValidatedField
+                  <Select
                     className="col-12 col-lg-6"
-                    label="Categories"
                     id="contact-categories"
                     name="categories"
                     data-cy="categories"
-                    type="select"
-                  >
-                    {categories.map((c: ICategory) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </ValidatedField>
+                    isMulti={true}
+                    getOptionValue={option => option.id}
+                    getOptionLabel={option => option.name}
+                    options={categories.map((c: ICategory) => ({ id: c.id, name: c.name }))}
+                    isClearable={true}
+                    closeMenuOnSelect={false}
+                    openMenuOnFocus={true}
+                    value={categoriesSelected}
+                    backspaceRemovesValue={true}
+                    onChange={e => {
+                      setCategoriesSelected([...e]);
+                    }}
+                  />
                   <ValidatedField
                     className="col-12 col-lg-6"
                     label="Birth Date"

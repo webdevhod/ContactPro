@@ -94,7 +94,7 @@ public class Contact implements Serializable {
     @NotNull
     private User appUser;
 
-    @ManyToMany(mappedBy = "contacts")
+    @ManyToMany(mappedBy = "contacts", fetch = FetchType.LAZY)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "appUser", "contacts" }, allowSetters = true)
     private Set<Category> categories = new HashSet<>();

@@ -1,5 +1,6 @@
 package com.webdevhod.contactpro.web.rest;
 
+import com.webdevhod.contactpro.domain.Category;
 import com.webdevhod.contactpro.domain.Contact;
 import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.ContactRepository;
@@ -13,10 +14,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -89,6 +87,12 @@ public class ContactResource {
         contact.setUpdated(now);
 
         Contact result = contactService.save(contact);
+
+        for (Category category : result.getCategories()) {
+            Category categoryFetched = categoryService.findOneWithEagerRelationships(category.getId()).get();
+            categoryService.update(categoryFetched.addContact(contact));
+        }
+
         return ResponseEntity
             .created(new URI("/api/contacts/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
@@ -120,6 +124,27 @@ public class ContactResource {
 
         if (!contactRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Contact contactOld = contactService.findOneWithEagerRelationships(id).get();
+
+        checkValidUser(contactOld);
+        User user = getCurrentUser();
+        contact.setAppUser(user);
+
+        Set<Category> categoriesOld = contactService.findOneWithEagerRelationships(id).get().getCategories();
+        Set<Long> categoriesNewIds = new HashSet<>();
+        contact.getCategories().forEach(c -> categoriesNewIds.add(c.getId()));
+
+        for (Category category : categoriesOld) {
+            if (!categoriesNewIds.contains(category.getId())) {
+                categoryService.update(category.removeContact(contactOld));
+            }
+        }
+
+        for (Long categoryId : categoriesNewIds) {
+            Category category = categoryService.findOneWithEagerRelationships(categoryId).get();
+            categoryService.update(category.addContact(contact));
         }
 
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
@@ -196,8 +221,6 @@ public class ContactResource {
             if (!searchTerm.isBlank()) {
                 String searchTermDecoded = java.net.URLDecoder.decode(searchTerm, StandardCharsets.UTF_8);
                 searchTermDecoded = String.format("%%%s%%", searchTermDecoded.replace(" ", "%").toLowerCase());
-                System.out.println("searchTermDecoded");
-                System.out.println(searchTermDecoded);
                 contacts = contactService.findByFullNameContaining(searchTermDecoded);
             } else {
                 Set<Contact> contactSet = categoryService.findById(categoryId).get().getContacts();
@@ -222,7 +245,7 @@ public class ContactResource {
     @GetMapping("/contacts/{id}")
     public ResponseEntity<Contact> getContact(@PathVariable Long id) {
         log.debug("REST request to get Contact : {}", id);
-        Optional<Contact> contact = contactService.findOne(id);
+        Optional<Contact> contact = contactService.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(contact);
     }
 
@@ -235,10 +258,32 @@ public class ContactResource {
     @DeleteMapping("/contacts/{id}")
     public ResponseEntity<Void> deleteContact(@PathVariable Long id) {
         log.debug("REST request to delete Contact : {}", id);
+        Contact contact = contactService.findOneWithEagerRelationships(id).get();
+        checkValidUser(contact);
+
+        List<Long> categoryIds = new ArrayList<>();
+        contact.getCategories().forEach(c -> categoryIds.add(c.getId()));
+
+        for (Long categoryId : categoryIds) {
+            Category category = categoryService.findOneWithEagerRelationships(categoryId).get();
+            categoryService.update(category.removeContact(contact));
+        }
+
         contactService.delete(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    private User getCurrentUser() {
+        return userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+    }
+
+    private void checkValidUser(Contact contact) {
+        User user = getCurrentUser();
+        if (contact.getAppUser().getId() != user.getId()) {
+            throw new BadRequestAlertException("Current user and contact user do not match", ENTITY_NAME, "idsnotmatched");
+        }
     }
 }

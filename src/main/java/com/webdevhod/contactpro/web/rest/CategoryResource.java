@@ -103,6 +103,14 @@ public class CategoryResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
+        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+        Category categoryOld = categoryService.findById(id).get();
+
+        if (categoryOld.getAppUser().getId() != user.getId()) {
+            throw new BadRequestAlertException("Category user and current user don't match", ENTITY_NAME, "appUserIdNotMatched");
+        }
+
+        category.setAppUser(user);
         Category result = categoryService.update(category);
         return ResponseEntity
             .ok()

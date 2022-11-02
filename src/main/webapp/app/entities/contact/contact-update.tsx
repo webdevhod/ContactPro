@@ -106,7 +106,7 @@ export const ContactUpdate = () => {
     );
   }, [contactEntity]);
 
-  const handleChange = (event, callBack) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, callBack): void => {
     callBack(event.target.value);
   };
 

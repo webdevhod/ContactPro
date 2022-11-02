@@ -70,12 +70,17 @@ export default () => next => action => {
             } else if (typeof data === 'string' && data !== '') {
               addErrorAlert(data);
             } else {
-              toast.error(data?.message || data?.error || data?.title || 'Unknown error!');
+              toast.error(data?.message || data?.error || data?.title || '400: Bad Request!');
             }
             break;
           }
+
           case 404:
             addErrorAlert('Not found', 'error.url.not.found');
+            break;
+
+          case 417:
+            toast.error('417: Expectation Failed!');
             break;
 
           default:

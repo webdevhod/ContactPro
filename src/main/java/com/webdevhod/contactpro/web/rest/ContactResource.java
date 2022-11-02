@@ -1,12 +1,11 @@
 package com.webdevhod.contactpro.web.rest;
 
-import com.webdevhod.contactpro.domain.Category;
-import com.webdevhod.contactpro.domain.Contact;
-import com.webdevhod.contactpro.domain.User;
+import com.webdevhod.contactpro.domain.*;
 import com.webdevhod.contactpro.repository.ContactRepository;
 import com.webdevhod.contactpro.security.SecurityUtils;
 import com.webdevhod.contactpro.service.CategoryService;
 import com.webdevhod.contactpro.service.ContactService;
+import com.webdevhod.contactpro.service.MailService;
 import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
@@ -15,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -24,7 +24,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -53,16 +56,20 @@ public class ContactResource {
 
     private final UserService userService;
 
+    private final MailService mailService;
+
     public ContactResource(
         ContactService contactService,
         ContactRepository contactRepository,
         UserService userService,
-        CategoryService categoryService
+        CategoryService categoryService,
+        MailService mailService
     ) {
         this.contactService = contactService;
         this.contactRepository = contactRepository;
         this.userService = userService;
         this.categoryService = categoryService;
+        this.mailService = mailService;
     }
 
     /**
@@ -274,6 +281,53 @@ public class ContactResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/email-contact/{id}")
+    public ResponseEntity<EmailContactViewModel> getEmailContact(@PathVariable Long id) {
+        log.debug("REST request to get Email Contact : {}", id);
+        //        Optional<Contact> contact = contactService.findOneWithEagerRelationships(id);
+        Optional<Contact> contactOptional = contactService.findOne(id);
+        Contact contact = contactOptional.get();
+
+        EmailData emailData = new EmailData();
+        emailData.setEmailAddress(contact.getEmail());
+        emailData.setFirstName(contact.getFirstName());
+        emailData.setLastName(contact.getLastName());
+        //        emailData.setContact(contact);
+
+        EmailContactViewModel emailContactViewModel = new EmailContactViewModel();
+        emailContactViewModel.setContact(contact);
+        emailContactViewModel.setEmailData(emailData);
+
+        return new ResponseEntity<>(emailContactViewModel, HttpStatus.OK);
+    }
+
+    @PutMapping("/email-contact/{id}")
+    public ResponseEntity<HttpStatus> submitEmailContact(@NotNull @RequestBody EmailContactViewModel emailContactViewModel) {
+        Long contactId = emailContactViewModel.getContact().getId();
+        log.debug("REST request to post Email Contact : {}", contactId);
+
+        Optional<Contact> contactOptional = contactService.findOne(contactId);
+        Contact contact = contactOptional.get();
+
+        checkValidUser(contact);
+
+        EmailData emailData = emailContactViewModel.getEmailData();
+
+        HttpStatus emailStatus = HttpStatus.OK;
+
+        if (emailData.getSubject().isBlank() || emailData.getBody().isBlank()) {
+            emailStatus = HttpStatus.BAD_REQUEST;
+        } else {
+            try {
+                mailService.sendEmail(contact.getEmail(), emailData.getSubject(), emailData.getBody(), false, true);
+            } catch (Exception e) {
+                emailStatus = HttpStatus.EXPECTATION_FAILED;
+            }
+        }
+
+        return new ResponseEntity<>(emailStatus);
     }
 
     private User getCurrentUser() {

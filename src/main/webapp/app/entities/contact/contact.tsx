@@ -206,9 +206,9 @@ export const Contact = () => {
                               <Link className="me-3 editIcons" to={`${contact.id}/edit`}>
                                 <i className="bi bi-pencil-fill "></i>
                               </Link>
-                              <a className="me-3 editIcons" href="/ContactEmail.html">
+                              <Link className="me-3 editIcons" to={`/email-contact/${contact.id}`}>
                                 <i className="bi bi-envelope-fill "></i>
-                              </a>
+                              </Link>
                               <Link className="me-3 editIcons" to={`${contact.id}/delete`}>
                                 <i className="bi bi-trash-fill text-danger "></i>
                               </Link>

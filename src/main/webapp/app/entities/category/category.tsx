@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, getSortState } from 'react-jhipster';
+import { Translate, TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
@@ -37,6 +37,7 @@ export const Category = () => {
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
+        eagerload: false,
       })
     );
   };
@@ -47,7 +48,7 @@ export const Category = () => {
       ...paginationState,
       activePage: 1,
     });
-    dispatch(getEntities({}));
+    dispatch(getEntities({ eagerload: false }));
   };
 
   useEffect(() => {
@@ -100,10 +101,15 @@ export const Category = () => {
       <h2 id="category-heading" data-cy="CategoryHeading">
         Categories
         <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
+          <Button className="rounded-pill me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/category/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+          <Link
+            to="/category/new"
+            className="btn btn-primary rounded-pill jh-create-entity"
+            id="jh-create-entity"
+            data-cy="entityCreateButton"
+          >
             <FontAwesomeIcon icon="plus" />
             &nbsp; Create a new Category
           </Link>
@@ -117,36 +123,31 @@ export const Category = () => {
           loader={<div className="loader">Loading ...</div>}
         >
           {categoryList && categoryList.length > 0 ? (
-            <Table responsive>
+            <Table responsive striped bordered hover>
               <thead>
                 <tr>
-                  <th className="hand" onClick={sort('id')}>
-                    ID <FontAwesomeIcon icon="sort" />
+                  <th className="hand col-7 align-middle" onClick={sort('name')}>
+                    Name <FontAwesomeIcon icon="sort" className="ms-2" />
                   </th>
-                  <th className="hand" onClick={sort('name')}>
-                    Name <FontAwesomeIcon icon="sort" />
+                  <th className="hand align-middle" onClick={sort('created')}>
+                    Created <FontAwesomeIcon icon="sort" className="ms-2" />
                   </th>
-                  <th>
-                    App User <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th />
+                  <th className="align-middle">&nbsp;</th>
                 </tr>
               </thead>
               <tbody>
                 {categoryList.map((category, i) => (
                   <tr key={`entity-${i}`} data-cy="entityTable">
-                    <td>
-                      <Button tag={Link} to={`/category/${category.id}`} color="link" size="sm">
-                        {category.id}
-                      </Button>
+                    <td className="align-middle">
+                      <Link to={`/category/${category.id}`} style={{ fontWeight: 'normal', textDecoration: 'none' }}>
+                        {category.name}
+                      </Link>
                     </td>
-                    <td>{category.name}</td>
-                    <td>{category.appUser ? category.appUser.login : ''}</td>
-                    <td className="text-end">
+                    <td className="align-middle">
+                      {category.created ? <TextFormat type="date" value={category.created} format={APP_DATE_FORMAT} /> : null}
+                    </td>
+                    <td className="text-end align-middle">
                       <div className="btn-group flex-btn-group-container gap-2">
-                        <Button tag={Link} to={`/category/${category.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                        </Button>
                         <Button tag={Link} to={`/category/${category.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
                           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
                         </Button>

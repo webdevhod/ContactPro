@@ -17,6 +17,12 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CategoryRepository extends CategoryRepositoryWithBagRelationships, JpaRepository<Category, Long> {
+    @Query("select category from Category category where category.id = :id and category.appUser.login = ?#{principal.username}")
+    Optional<Category> findOneById(@Param("id") Long id);
+
+    @Query("select category from Category category where category.appUser.login = ?#{principal.username} and category.name = :name")
+    Optional<Category> findOneByName(@Param("name") String name);
+
     @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findByAppUserIsCurrentUser();
 
@@ -36,14 +42,18 @@ public interface CategoryRepository extends CategoryRepositoryWithBagRelationshi
     }
 
     @Query(
-        value = "select distinct category from Category category where category.appUser.login = ?#{principal.username}",
+        value = "select distinct category from Category category left join fetch category.contacts where category.appUser.login = ?#{principal.username}",
         countQuery = "select count(distinct category) from Category category"
     )
     Page<Category> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select distinct category from Category category where category.appUser.login = ?#{principal.username}")
+    @Query(
+        "select distinct category from Category category left join fetch category.contacts where category.appUser.login = ?#{principal.username}"
+    )
     List<Category> findAllWithToOneRelationships();
 
-    @Query("select category from Category category where category.appUser.login = ?#{principal.username} AND category.id = :id")
+    @Query(
+        "select category from Category category left join fetch category.contacts where category.id = :id AND category.appUser.login = ?#{principal.username}"
+    )
     Optional<Category> findOneWithToOneRelationships(@Param("id") Long id);
 }

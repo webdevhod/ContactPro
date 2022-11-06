@@ -18,6 +18,7 @@ import { ICategory } from 'app/shared/model/category.model';
 import { getEntities, reset } from './contact.reducer';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { IContact } from 'app/shared/model/contact.model';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export const Contact = () => {
   const dispatch = useAppDispatch();
@@ -112,7 +113,8 @@ export const Contact = () => {
       <div className="row">
         <div className="col-12 text-end mb-3">
           <Link to="/contact/new" className="btn btn-primary rounded-pill" data-cy="entityCreateButton">
-            Create New
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Create New
           </Link>
         </div>
       </div>

@@ -25,10 +25,6 @@ export const ContactDetail = () => {
         <h2 data-cy="contactDetailsHeading">Contact</h2>
         <dl className="jh-entity-details">
           <dt>
-            <span id="id">ID</span>
-          </dt>
-          <dd>{contactEntity.id}</dd>
-          <dt>
             <span id="firstName">First Name</span>
           </dt>
           <dd>{contactEntity.firstName}</dd>
@@ -36,10 +32,6 @@ export const ContactDetail = () => {
             <span id="lastName">Last Name</span>
           </dt>
           <dd>{contactEntity.lastName}</dd>
-          <dt>
-            <span id="fullName">Full Name</span>
-          </dt>
-          <dd>{contactEntity.fullName}</dd>
           <dt>
             <span id="address1">Address 1</span>
           </dt>
@@ -87,7 +79,7 @@ export const ContactDetail = () => {
           </dt>
           <dd>
             {contactEntity.image ? (
-              <div>
+              <div className="mt-1">
                 {contactEntity.imageContentType ? (
                   <a onClick={openFile(contactEntity.imageContentType, contactEntity.image)}>
                     <img src={`data:${contactEntity.imageContentType};base64,${contactEntity.image}`} style={{ maxHeight: '30px' }} />
@@ -99,8 +91,6 @@ export const ContactDetail = () => {
               </div>
             ) : null}
           </dd>
-          <dt>App User</dt>
-          <dd>{contactEntity.appUser ? contactEntity.appUser.login : ''}</dd>
         </dl>
         <Button tag={Link} to="/contact" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

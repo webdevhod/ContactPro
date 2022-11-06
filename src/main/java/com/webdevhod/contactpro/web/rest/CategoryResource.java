@@ -1,7 +1,6 @@
 package com.webdevhod.contactpro.web.rest;
 
-import com.webdevhod.contactpro.domain.Category;
-import com.webdevhod.contactpro.domain.User;
+import com.webdevhod.contactpro.domain.*;
 import com.webdevhod.contactpro.repository.CategoryRepository;
 import com.webdevhod.contactpro.security.SecurityUtils;
 import com.webdevhod.contactpro.service.CategoryService;
@@ -9,6 +8,8 @@ import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,13 +63,22 @@ public class CategoryResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/categories")
-    public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) throws URISyntaxException {
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) throws URISyntaxException {
         log.debug("REST request to save Category : {}", category);
         if (category.getId() != null) {
             throw new BadRequestAlertException("A new category cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        category.setAppUser(user);
+        if (category.getName().isBlank()) {
+            throw new BadRequestAlertException("A new category cannot have a blank title.", ENTITY_NAME, "blankname");
+        }
+        if (categoryService.findOneByName(category.getName()).isPresent()) {
+            throw new BadRequestAlertException("Duplicate category", ENTITY_NAME, "duplicatename");
+        }
+
+        category.setAppUser(getCurrentUser());
+
+        category.setCreated(ZonedDateTime.now(ZoneOffset.UTC));
+
         Category result = categoryService.save(category);
         return ResponseEntity
             .created(new URI("/api/categories/" + result.getId()))
@@ -89,7 +99,7 @@ public class CategoryResource {
     @PutMapping("/categories/{id}")
     public ResponseEntity<Category> updateCategory(
         @PathVariable(value = "id", required = false) final Long id,
-        @Valid @RequestBody Category category
+        @RequestBody Category category
     ) throws URISyntaxException {
         log.debug("REST request to update Category : {}, {}", id, category);
         if (category.getId() == null) {
@@ -99,18 +109,9 @@ public class CategoryResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!categoryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
+        checkValidUser(id);
+        category.setAppUser(getCurrentUser());
 
-        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        Category categoryOld = categoryService.findById(id).get();
-
-        if (categoryOld.getAppUser().getId() != user.getId()) {
-            throw new BadRequestAlertException("Category user and current user don't match", ENTITY_NAME, "appUserIdNotMatched");
-        }
-
-        category.setAppUser(user);
         Category result = categoryService.update(category);
         return ResponseEntity
             .ok()
@@ -142,10 +143,7 @@ public class CategoryResource {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
 
-        if (!categoryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
+        checkValidUser(id);
         Optional<Category> result = categoryService.partialUpdate(category);
 
         return ResponseUtil.wrapOrNotFound(
@@ -184,9 +182,12 @@ public class CategoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the category, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/categories/{id}")
-    public ResponseEntity<Category> getCategory(@PathVariable Long id) {
+    public ResponseEntity<Category> getCategory(
+        @PathVariable Long id,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
+    ) {
         log.debug("REST request to get Category : {}", id);
-        Optional<Category> category = categoryService.findOne(id);
+        Optional<Category> category = eagerload ? categoryService.findOneWithEagerRelationships(id) : categoryService.findOneById(id);
         return ResponseUtil.wrapOrNotFound(category);
     }
 
@@ -199,10 +200,28 @@ public class CategoryResource {
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.debug("REST request to delete Category : {}", id);
+        checkValidUser(id);
         categoryService.delete(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    private User getCurrentUser() {
+        return userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
+    }
+
+    private void checkValidUser(Long categoryId) {
+        User user = getCurrentUser();
+        Category category = categoryService.findOneWithEagerRelationships(categoryId).get();
+        if (category.getAppUser().getId() != user.getId()) {
+            throw new BadRequestAlertException("Current user and Category user do not match", ENTITY_NAME, "idsnotmatched");
+        }
+        for (Contact contact : category.getContacts()) {
+            if (contact.getAppUser().getId() != user.getId()) {
+                throw new BadRequestAlertException("Current user and Contact user do not match", ENTITY_NAME, "idsnotmatched");
+            }
+        }
     }
 }

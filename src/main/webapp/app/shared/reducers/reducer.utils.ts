@@ -12,7 +12,15 @@ import { AxiosError } from 'axios';
 /**
  * Model for redux actions with pagination
  */
-export type IQueryParams = { query?: string; page?: number; size?: number; sort?: string; categoryId?: string; searchTerm?: string };
+export type IQueryParams = {
+  query?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+  categoryId?: string;
+  searchTerm?: string;
+  eagerload?: boolean;
+};
 
 /**
  * Useful types for working with actions

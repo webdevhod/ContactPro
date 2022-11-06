@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import {} from 'react-jhipster';
+import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
@@ -15,7 +15,7 @@ export const CategoryDetail = () => {
   const { id } = useParams<'id'>();
 
   useEffect(() => {
-    dispatch(getEntity(id));
+    dispatch(getEntity({ id }));
   }, []);
 
   const categoryEntity = useAppSelector(state => state.category.entity);
@@ -25,25 +25,27 @@ export const CategoryDetail = () => {
         <h2 data-cy="categoryDetailsHeading">Category</h2>
         <dl className="jh-entity-details">
           <dt>
-            <span id="id">ID</span>
-          </dt>
-          <dd>{categoryEntity.id}</dd>
-          <dt>
             <span id="name">Name</span>
           </dt>
           <dd>{categoryEntity.name}</dd>
-          <dt>App User</dt>
-          <dd>{categoryEntity.appUser ? categoryEntity.appUser.login : ''}</dd>
-          <dt>Contact</dt>
+          <dt>
+            <span id="created">Created</span>
+          </dt>
+          <dd>{categoryEntity.created ? <TextFormat value={categoryEntity.created} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
+          <dt>Contact(s)</dt>
           <dd>
-            {categoryEntity.contacts
-              ? categoryEntity.contacts.map((val, i) => (
-                  <span key={val.id}>
-                    <a>{val.id}</a>
-                    {categoryEntity.contacts && i === categoryEntity.contacts.length - 1 ? '' : ', '}
-                  </span>
-                ))
-              : null}
+            {categoryEntity.contacts != null && categoryEntity.contacts.length > 0 ? (
+              categoryEntity.contacts.map((val, i) => (
+                <span key={val.id}>
+                  <Link to={`/contact/${val.id}`} style={{ fontWeight: 'normal', textDecoration: 'none' }}>
+                    {`${val.firstName} ${val.lastName}`}
+                  </Link>
+                  {categoryEntity.contacts && i === categoryEntity.contacts.length - 1 ? '' : ', '}
+                </span>
+              ))
+            ) : (
+              <span className="fst-italic fw-lighter">Empty</span>
+            )}
           </dd>
         </dl>
         <Button tag={Link} to="/category" replace color="info" data-cy="entityDetailsBackButton">

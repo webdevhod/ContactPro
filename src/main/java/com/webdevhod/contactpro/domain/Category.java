@@ -2,6 +2,7 @@ package com.webdevhod.contactpro.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -31,11 +32,15 @@ public class Category implements Serializable {
     @Column(name = "name", length = 50, nullable = false)
     private String name;
 
+    @NotNull
+    @Column(name = "created", nullable = false)
+    private ZonedDateTime created;
+
     @ManyToOne(optional = false)
     @NotNull
     private User appUser;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
         name = "rel_category__contact",
         joinColumns = @JoinColumn(name = "category_id"),
@@ -71,6 +76,19 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public ZonedDateTime getCreated() {
+        return this.created;
+    }
+
+    public Category created(ZonedDateTime created) {
+        this.setCreated(created);
+        return this;
+    }
+
+    public void setCreated(ZonedDateTime created) {
+        this.created = created;
     }
 
     public User getAppUser() {
@@ -136,6 +154,7 @@ public class Category implements Serializable {
         return "Category{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", created='" + getCreated() + "'" +
             "}";
     }
 }

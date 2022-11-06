@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, FormText, Row } from 'reactstrap';
+import Select from 'react-select';
+import { Button, Col, Label, Row } from 'reactstrap';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { mapIdList } from 'app/shared/util/entity-utils';
-
 import { getEntities as getContacts } from 'app/entities/contact/contact.reducer';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { IContact } from 'app/shared/model/contact.model';
 import { createEntity, getEntity, updateEntity } from './category.reducer';
 
 export const CategoryUpdate = () => {
@@ -19,6 +19,7 @@ export const CategoryUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const [contactsSelected, setContactsSelected] = useState([]);
   const users = useAppSelector(state => state.userManagement.users);
   const contacts = useAppSelector(state => state.contact.entities);
   const categoryEntity = useAppSelector(state => state.category.entity);
@@ -32,12 +33,24 @@ export const CategoryUpdate = () => {
 
   useEffect(() => {
     if (!isNew) {
-      dispatch(getEntity(id));
+      dispatch(getEntity({ id }));
     }
 
     dispatch(getUsers({}));
     dispatch(getContacts({}));
   }, []);
+
+  useEffect(() => {
+    if (categoryEntity != null) {
+      setContactsSelected(
+        categoryEntity.contacts == null
+          ? []
+          : categoryEntity.contacts.map((c: IContact) => {
+              return { id: c.id, name: `${c.firstName} ${c.lastName}` };
+            })
+      );
+    }
+  }, [categoryEntity]);
 
   useEffect(() => {
     if (updateSuccess) {
@@ -49,8 +62,8 @@ export const CategoryUpdate = () => {
     const entity = {
       ...categoryEntity,
       ...values,
-      contacts: mapIdList(values.contacts),
-      appUser: users.find(it => it.id.toString() === values.appUser.toString()),
+      contacts: contactsSelected,
+      appUser: users.find(it => it.id?.toString() === values.appUser?.toString()),
     };
 
     if (isNew) {
@@ -74,7 +87,7 @@ export const CategoryUpdate = () => {
       <Row className="justify-content-center">
         <Col md="8">
           <h2 id="contactProApp.category.home.createOrEditLabel" data-cy="CategoryCreateUpdateHeading">
-            Create or edit a Category
+            {`${isNew ? 'Create' : 'Edit'} Category`}
           </h2>
         </Col>
       </Row>
@@ -84,7 +97,9 @@ export const CategoryUpdate = () => {
             <p>Loading...</p>
           ) : (
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? <ValidatedField name="id" required readOnly id="category-id" label="ID" validate={{ required: true }} /> : null}
+              {!isNew ? (
+                <ValidatedField name="id" required readOnly hidden id="category-id" label="ID" validate={{ required: true }} />
+              ) : null}
               <ValidatedField
                 label="Name"
                 id="category-name"
@@ -97,27 +112,26 @@ export const CategoryUpdate = () => {
                   maxLength: { value: 50, message: 'This field cannot be longer than 50 characters.' },
                 }}
               />
-              <ValidatedField id="category-appUser" name="appUser" data-cy="appUser" label="App User" type="select" required>
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <FormText>This field is required.</FormText>
-              <ValidatedField label="Contact" id="category-contact" data-cy="contact" type="select" multiple name="contacts">
-                <option value="" key="0" />
-                {contacts
-                  ? contacts.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
+              <Label htmlFor="contacts">Contacts</Label>
+              <Select
+                className="col-12 col-lg-6 mb-3"
+                id="category-contact"
+                data-cy="contact"
+                name="contacts"
+                isMulti={true}
+                isSearchable={true}
+                getOptionValue={option => option.id}
+                getOptionLabel={option => option.name}
+                options={contacts.map((c: IContact) => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))}
+                isClearable={true}
+                closeMenuOnSelect={false}
+                openMenuOnFocus={true}
+                value={contactsSelected}
+                backspaceRemovesValue={true}
+                onChange={e => {
+                  setContactsSelected([...e]);
+                }}
+              />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/category" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

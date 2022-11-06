@@ -8,6 +8,11 @@
       "fieldValidateRules": ["required", "minlength", "maxlength"],
       "fieldValidateRulesMaxlength": "50",
       "fieldValidateRulesMinlength": "1"
+    },
+    {
+      "fieldName": "created",
+      "fieldType": "ZonedDateTime",
+      "fieldValidateRules": ["required"]
     }
   ],
   "jpaMetamodelFiltering": false,

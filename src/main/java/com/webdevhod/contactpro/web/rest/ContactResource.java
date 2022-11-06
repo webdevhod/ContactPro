@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -26,8 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -89,6 +86,8 @@ public class ContactResource {
         User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
         contact.setAppUser(user);
 
+        checkValidUser(contact);
+
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         contact.setCreated(now);
         contact.setUpdated(now);
@@ -133,9 +132,9 @@ public class ContactResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
+        checkValidUser(contact);
         Contact contactOld = contactService.findOneWithEagerRelationships(id).get();
 
-        checkValidUser(contactOld);
         User user = getCurrentUser();
         contact.setAppUser(user);
 
@@ -145,7 +144,8 @@ public class ContactResource {
 
         for (Category category : categoriesOld) {
             if (!categoriesNewIds.contains(category.getId())) {
-                categoryService.update(category.removeContact(contactOld));
+                Category categoryFetched = categoryService.findOneWithEagerRelationships(category.getId()).get();
+                categoryService.update(categoryFetched.removeContact(contactOld));
             }
         }
 
@@ -192,6 +192,7 @@ public class ContactResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
+        checkValidUser(contactService.findOneWithEagerRelationships(id).get());
         Optional<Contact> result = contactService.partialUpdate(contact);
 
         return ResponseUtil.wrapOrNotFound(
@@ -230,7 +231,7 @@ public class ContactResource {
                 searchTermDecoded = String.format("%%%s%%", searchTermDecoded.replace(" ", "%").toLowerCase());
                 contacts = contactService.findByFullNameContaining(searchTermDecoded);
             } else {
-                Set<Contact> contactSet = categoryService.findById(categoryId).get().getContacts();
+                Set<Contact> contactSet = categoryService.findOneWithEagerRelationships(categoryId).get().getContacts();
                 contacts = contactSet.stream().toList();
             }
 
@@ -311,7 +312,7 @@ public class ContactResource {
         Optional<Contact> contactOptional = contactService.findOne(contactId);
         Contact contact = contactOptional.get();
 
-        checkValidUser(contact);
+        checkValidUser(contact, false);
 
         EmailData emailData = emailContactViewModel.getEmailData();
 
@@ -335,9 +336,21 @@ public class ContactResource {
     }
 
     private void checkValidUser(Contact contact) {
+        checkValidUser(contact, true);
+    }
+
+    private void checkValidUser(Contact contact, boolean eagerload) {
         User user = getCurrentUser();
         if (contact.getAppUser().getId() != user.getId()) {
             throw new BadRequestAlertException("Current user and contact user do not match", ENTITY_NAME, "idsnotmatched");
+        }
+        if (eagerload) {
+            for (Category category : contact.getCategories()) {
+                Category categoryFetched = categoryService.findOneById(category.getId()).get();
+                if (categoryFetched.getAppUser().getId() != user.getId()) {
+                    throw new BadRequestAlertException("Current user and Category user do not match", ENTITY_NAME, "idsnotmatched");
+                }
+            }
         }
     }
 }

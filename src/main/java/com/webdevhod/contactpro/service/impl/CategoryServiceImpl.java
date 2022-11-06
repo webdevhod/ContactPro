@@ -84,9 +84,16 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = false)
-    public Optional<Category> findOne(Long id) {
+    public Optional<Category> findOneById(Long id) {
         log.debug("Request to get Category : {}", id);
-        return categoryRepository.findOneWithEagerRelationships(id);
+        return categoryRepository.findOneById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Optional<Category> findOneByName(String name) {
+        log.debug("Request to get Category : {}", name);
+        return categoryRepository.findOneByName(name);
     }
 
     @Override

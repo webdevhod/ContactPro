@@ -2,10 +2,10 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
 import { ValidatedBlobField, ValidatedField, ValidatedForm } from 'react-jhipster';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import Select from 'react-select';
+import { Button, Label } from 'reactstrap';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
@@ -318,24 +318,27 @@ export const ContactUpdate = () => {
                       handleChange(e, setZipCode);
                     }}
                   />
-                  <Select
-                    className="col-12 col-lg-6"
-                    id="contact-categories"
-                    name="categories"
-                    data-cy="categories"
-                    isMulti={true}
-                    getOptionValue={option => option.id}
-                    getOptionLabel={option => option.name}
-                    options={categories.map((c: ICategory) => ({ id: c.id, name: c.name }))}
-                    isClearable={true}
-                    closeMenuOnSelect={false}
-                    openMenuOnFocus={true}
-                    value={categoriesSelected}
-                    backspaceRemovesValue={true}
-                    onChange={e => {
-                      setCategoriesSelected([...e]);
-                    }}
-                  />
+                  <div className="col-12 col-lg-6">
+                    <Label htmlFor="categories">Categories</Label>
+                    <Select
+                      id="contact-categories"
+                      name="categories"
+                      data-cy="categories"
+                      isMulti={true}
+                      isSearchable={true}
+                      getOptionValue={option => option.id}
+                      getOptionLabel={option => option.name}
+                      options={categories.map((c: ICategory) => ({ id: c.id, name: c.name }))}
+                      isClearable={true}
+                      closeMenuOnSelect={false}
+                      openMenuOnFocus={true}
+                      value={categoriesSelected}
+                      backspaceRemovesValue={true}
+                      onChange={e => {
+                        setCategoriesSelected([...e]);
+                      }}
+                    />
+                  </div>
                   <ValidatedField
                     className="col-12 col-lg-6"
                     label="Birth Date"

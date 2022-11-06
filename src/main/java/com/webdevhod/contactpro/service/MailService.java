@@ -53,6 +53,11 @@ public class MailService {
 
     @Async
     public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+        sendEmail(new String[] { to }, subject, content, isMultipart, isHtml);
+    }
+
+    @Async
+    public void sendEmail(String[] to, String subject, String content, boolean isMultipart, boolean isHtml) {
         log.debug(
             "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
             isMultipart,

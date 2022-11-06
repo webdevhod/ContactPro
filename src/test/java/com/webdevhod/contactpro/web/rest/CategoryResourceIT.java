@@ -1,5 +1,6 @@
 package com.webdevhod.contactpro.web.rest;
 
+import static com.webdevhod.contactpro.web.rest.TestUtil.sameInstant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
@@ -11,6 +12,10 @@ import com.webdevhod.contactpro.domain.Category;
 import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.CategoryRepository;
 import com.webdevhod.contactpro.service.CategoryService;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -43,6 +48,9 @@ class CategoryResourceIT {
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
     private static final String UPDATED_NAME = "BBBBBBBBBB";
 
+    private static final ZonedDateTime DEFAULT_CREATED = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
+    private static final ZonedDateTime UPDATED_CREATED = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+
     private static final String ENTITY_API_URL = "/api/categories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -73,7 +81,7 @@ class CategoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Category createEntity(EntityManager em) {
-        Category category = new Category().name(DEFAULT_NAME);
+        Category category = new Category().name(DEFAULT_NAME).created(DEFAULT_CREATED);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -89,7 +97,7 @@ class CategoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Category createUpdatedEntity(EntityManager em) {
-        Category category = new Category().name(UPDATED_NAME);
+        Category category = new Category().name(UPDATED_NAME).created(UPDATED_CREATED);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -117,6 +125,7 @@ class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeCreate + 1);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testCategory.getCreated()).isEqualTo(DEFAULT_CREATED);
     }
 
     @Test
@@ -156,6 +165,23 @@ class CategoryResourceIT {
 
     @Test
     @Transactional
+    void checkCreatedIsRequired() throws Exception {
+        int databaseSizeBeforeTest = categoryRepository.findAll().size();
+        // set the field null
+        category.setCreated(null);
+
+        // Create the Category, which fails.
+
+        restCategoryMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(category)))
+            .andExpect(status().isBadRequest());
+
+        List<Category> categoryList = categoryRepository.findAll();
+        assertThat(categoryList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllCategories() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
@@ -166,7 +192,8 @@ class CategoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(category.getId().intValue())))
-            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)));
+            .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
+            .andExpect(jsonPath("$.[*].created").value(hasItem(sameInstant(DEFAULT_CREATED))));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -198,7 +225,8 @@ class CategoryResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(category.getId().intValue()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
+            .andExpect(jsonPath("$.created").value(sameInstant(DEFAULT_CREATED)));
     }
 
     @Test
@@ -220,7 +248,7 @@ class CategoryResourceIT {
         Category updatedCategory = categoryRepository.findById(category.getId()).get();
         // Disconnect from session so that the updates on updatedCategory are not directly saved in db
         em.detach(updatedCategory);
-        updatedCategory.name(UPDATED_NAME);
+        updatedCategory.name(UPDATED_NAME).created(UPDATED_CREATED);
 
         restCategoryMockMvc
             .perform(
@@ -235,6 +263,7 @@ class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeUpdate);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testCategory.getCreated()).isEqualTo(UPDATED_CREATED);
     }
 
     @Test
@@ -320,6 +349,7 @@ class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeUpdate);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testCategory.getCreated()).isEqualTo(DEFAULT_CREATED);
     }
 
     @Test
@@ -334,7 +364,7 @@ class CategoryResourceIT {
         Category partialUpdatedCategory = new Category();
         partialUpdatedCategory.setId(category.getId());
 
-        partialUpdatedCategory.name(UPDATED_NAME);
+        partialUpdatedCategory.name(UPDATED_NAME).created(UPDATED_CREATED);
 
         restCategoryMockMvc
             .perform(
@@ -349,6 +379,7 @@ class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeUpdate);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testCategory.getCreated()).isEqualTo(UPDATED_CREATED);
     }
 
     @Test

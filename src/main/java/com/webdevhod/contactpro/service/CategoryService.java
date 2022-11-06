@@ -63,7 +63,8 @@ public interface CategoryService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<Category> findOne(Long id);
+    Optional<Category> findOneById(Long id);
+    Optional<Category> findOneByName(String name);
 
     /**
      * Delete the "id" category.

@@ -21,15 +21,17 @@ const apiUrl = 'api/categories';
 
 // Actions
 
-export const getEntities = createAsyncThunk('category/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('category/fetch_entity_list', async ({ page, size, sort, eagerload }: IQueryParams) => {
+  const requestUrl = `${apiUrl}${sort ? `?page=${page}&size=${size}&sort=${sort}&` : '?'}eagerload=${
+    eagerload == null ? 'true' : eagerload
+  }&cacheBuster=${new Date().getTime()}`;
   return axios.get<ICategory[]>(requestUrl);
 });
 
 export const getEntity = createAsyncThunk(
   'category/fetch_entity',
-  async (id: string | number) => {
-    const requestUrl = `${apiUrl}/${id}`;
+  async ({ id, eagerload }: { id: string | number; eagerload?: boolean }) => {
+    const requestUrl = `${apiUrl}/${id}?eagerload=${eagerload == null ? 'true' : eagerload}`;
     return axios.get<ICategory>(requestUrl);
   },
   { serializeError: serializeAxiosError }

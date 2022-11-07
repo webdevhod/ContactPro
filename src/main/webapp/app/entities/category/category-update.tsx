@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import React, { useEffect, useState } from 'react';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -132,13 +133,19 @@ export const CategoryUpdate = () => {
                   setContactsSelected([...e]);
                 }}
               />
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/category" replace color="info">
+              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/category" replace color="secondary">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
                 <span className="d-none d-md-inline">Back</span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
+              <Button tag={Link} to={`/email-category/${id}`} data-cy="entityCreateEmailButton" replace className="ms-1" color="info">
+                <FontAwesomeIcon icon={faEnvelope} />
+                &nbsp;
+                <span className="d-none d-md-inline">Email</span>
+              </Button>
+              &nbsp;
+              <Button id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} className="ms-1" color="primary">
                 <FontAwesomeIcon icon="save" />
                 &nbsp; Save
               </Button>

@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -48,12 +49,16 @@ export const CategoryDetail = () => {
             )}
           </dd>
         </dl>
-        <Button tag={Link} to="/category" replace color="info" data-cy="entityDetailsBackButton">
+        <Button tag={Link} to="/category" replace color="secondary" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/category/${categoryEntity.id}/edit`} replace color="primary">
+        <Button tag={Link} to={`/category/${categoryEntity.id}/edit`} replace color="info">
           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+        </Button>
+        &nbsp;
+        <Button tag={Link} to={`/email-category/${id}`} replace color="primary">
+          <FontAwesomeIcon icon={faEnvelope} /> <span className="d-none d-md-inline">Email</span>
         </Button>
       </Col>
     </Row>

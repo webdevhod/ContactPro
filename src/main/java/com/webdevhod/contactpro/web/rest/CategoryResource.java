@@ -4,16 +4,17 @@ import com.webdevhod.contactpro.domain.*;
 import com.webdevhod.contactpro.repository.CategoryRepository;
 import com.webdevhod.contactpro.security.SecurityUtils;
 import com.webdevhod.contactpro.service.CategoryService;
+import com.webdevhod.contactpro.service.MailService;
 import com.webdevhod.contactpro.service.UserService;
 import com.webdevhod.contactpro.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,18 @@ public class CategoryResource {
 
     private final UserService userService;
 
-    public CategoryResource(CategoryService categoryService, CategoryRepository categoryRepository, UserService userService) {
+    private final MailService mailService;
+
+    public CategoryResource(
+        CategoryService categoryService,
+        CategoryRepository categoryRepository,
+        UserService userService,
+        MailService mailService
+    ) {
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.mailService = mailService;
     }
 
     /**
@@ -206,6 +215,46 @@ public class CategoryResource {
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/email-category/{id}")
+    public ResponseEntity<EmailCategoryViewModel> getEmailCategory(@PathVariable Long id) {
+        log.debug("REST request to get Email Category : {}", id);
+        Category category = categoryService.findOneWithEagerRelationships(id).get();
+        EmailData emailData = new EmailData();
+
+        EmailCategoryViewModel ecvm = new EmailCategoryViewModel();
+        ecvm.setCategory(category);
+        ecvm.setEmailData(emailData);
+
+        return new ResponseEntity<>(ecvm, HttpStatus.OK);
+    }
+
+    @PutMapping("/email-category/{id}")
+    public ResponseEntity<HttpStatus> submitEmailContact(@NotNull @RequestBody EmailCategoryViewModel emailCategoryViewModel) {
+        Long categoryId = emailCategoryViewModel.getCategory().getId();
+        log.debug("REST request to post Email Category : {}", categoryId);
+
+        EmailData emailData = emailCategoryViewModel.getEmailData();
+        HttpStatus emailStatus = HttpStatus.OK;
+
+        if (emailData.getSubject().isBlank() || emailData.getBody().isBlank()) {
+            emailStatus = HttpStatus.BAD_REQUEST;
+        } else {
+            try {
+                checkValidUser(categoryId);
+                Category category = categoryService.findOneWithEagerRelationships(categoryId).get();
+                List<String> emailList = new ArrayList<String>();
+                category.getContacts().forEach(c -> emailList.add(c.getEmail()));
+                String[] emails = new String[emailList.size()];
+                emailList.toArray(emails);
+                mailService.sendEmail(emails, emailData.getSubject(), emailData.getBody(), false, true);
+            } catch (Exception e) {
+                emailStatus = HttpStatus.EXPECTATION_FAILED;
+            }
+        }
+
+        return new ResponseEntity<>(emailStatus);
     }
 
     private User getCurrentUser() {

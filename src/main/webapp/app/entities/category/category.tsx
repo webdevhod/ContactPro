@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
 import { Translate, TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
@@ -150,6 +151,9 @@ export const Category = () => {
                       <div className="btn-group flex-btn-group-container gap-2">
                         <Button tag={Link} to={`/category/${category.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
                           <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                        </Button>
+                        <Button tag={Link} to={`/email-category/${category.id}`} color="info" size="sm" data-cy="entityEmailButton">
+                          <FontAwesomeIcon icon={faEnvelope} /> <span className="d-none d-md-inline">Email</span>
                         </Button>
                         <Button tag={Link} to={`/category/${category.id}/delete`} color="danger" size="sm" data-cy="entityDeleteButton">
                           <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>

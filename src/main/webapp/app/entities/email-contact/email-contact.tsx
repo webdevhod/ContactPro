@@ -2,9 +2,7 @@ import React, { useState, useEffect, MouseEvent } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-// import { IEmailContactViewModel } from 'app/shared/model/email-contact-view-model.model';
 import { getEntity, updateEntity } from '../email-contact-view-model/email-contact-view-model.reducer';
-import { IEmailContactViewModel } from 'app/shared/model/email-contact-view-model.model';
 import { IEmailData } from 'app/shared/model/email-data.model';
 import { IContact } from 'app/shared/model/contact.model';
 import { toast } from 'react-toastify';
@@ -17,7 +15,6 @@ const EmailContact = () => {
   const errorMessage = useAppSelector(state => state.emailContactViewModel.errorMessage);
 
   const emailContactViewModelEntity = useAppSelector(state => state.emailContactViewModel.entity);
-  const [ecvm, setEcvm] = useState<IEmailContactViewModel>(null);
   const [contact, setContact] = useState<IContact>(null);
   const [emailData, setEmailData] = useState<IEmailData>(null);
 
@@ -52,9 +49,6 @@ const EmailContact = () => {
   }, []);
 
   useEffect(() => {
-    console.log('emailContactViewModelEntity');
-    console.log(emailContactViewModelEntity);
-    setEcvm(emailContactViewModelEntity != null ? { ...emailContactViewModelEntity } : {});
     setContact(
       emailContactViewModelEntity != null && emailContactViewModelEntity.contact != null ? { ...emailContactViewModelEntity.contact } : {}
     );
@@ -66,18 +60,6 @@ const EmailContact = () => {
   }, [emailContactViewModelEntity]);
 
   useEffect(() => {
-    console.log('ecvm');
-    console.log(ecvm);
-  }, [ecvm]);
-
-  useEffect(() => {
-    console.log('contact');
-    console.log(contact);
-  }, [contact]);
-
-  useEffect(() => {
-    console.log('emailData');
-    console.log(emailData);
     if (emailData != null && Object.keys(emailData).length > 0) {
       setEmailAddress(emailData.emailAddress);
       setFirstName(emailData.firstName);

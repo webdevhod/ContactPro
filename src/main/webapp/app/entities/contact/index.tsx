@@ -7,6 +7,7 @@ import Contact from './contact';
 import ContactDetail from './contact-detail';
 import ContactUpdate from './contact-update';
 import ContactDeleteDialog from './contact-delete-dialog';
+import PageNotFound from 'app/shared/error/page-not-found';
 
 const ContactRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -17,6 +18,7 @@ const ContactRoutes = () => (
       <Route path="edit" element={<ContactUpdate />} />
       <Route path="delete" element={<ContactDeleteDialog />} />
     </Route>
+    <Route path="*" element={<PageNotFound />} />
   </ErrorBoundaryRoutes>
 );
 

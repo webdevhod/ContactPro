@@ -7,6 +7,7 @@ import Category from './category';
 import Contact from './contact';
 import EmailCategory from './email-category';
 import EmailContact from './email-contact';
+import PageNotFound from '../shared/error/page-not-found';
 /* jhipster-needle-add-route-import - JHipster will add routes here */
 
 export default () => {
@@ -18,6 +19,7 @@ export default () => {
         <Route path="contact/*" element={<Contact />} />
         <Route path="email-contact/*" element={<EmailContact />} />
         <Route path="email-category/*" element={<EmailCategory />} />
+        <Route path="*" element={<PageNotFound />} />
         {/* jhipster-needle-add-route-path - JHipster will add routes here */}
       </ErrorBoundaryRoutes>
     </div>

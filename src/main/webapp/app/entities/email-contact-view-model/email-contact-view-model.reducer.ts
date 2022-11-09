@@ -7,7 +7,7 @@ import { IEmailContactViewModel, defaultValue } from 'app/shared/model/email-con
 
 const initialState: EntityState<IEmailContactViewModel> = {
   loading: false,
-  errorMessage: 'Error sending email!',
+  errorMessage: null,
   entities: [],
   entity: defaultValue,
   updating: false,

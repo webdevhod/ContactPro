@@ -5,7 +5,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntity, deleteEntity } from './contact.reducer';
+import { getEntity, deleteEntity, reset } from './contact.reducer';
 
 export const ContactDeleteDialog = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +38,15 @@ export const ContactDeleteDialog = () => {
   const confirmDelete = () => {
     dispatch(deleteEntity(contactEntity.id));
   };
+
+  const errorMessage = useAppSelector(state => state.contact.errorMessage);
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   return (
     <Modal isOpen toggle={handleClose}>

@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { ICategory } from 'app/shared/model/category.model';
 import { States } from 'app/shared/model/enumerations/states.model';
-import { createEntity, getEntity, updateEntity } from './contact.reducer';
+import { createEntity, getEntity, updateEntity, reset } from './contact.reducer';
 
 import { decode } from 'base64-arraybuffer';
 
@@ -136,6 +136,15 @@ export const ContactUpdate = () => {
   };
 
   const defaultValues = () => (isNew ? {} : { state: 'CA', ...contactEntity });
+
+  const errorMessage = useAppSelector(state => state.contact.errorMessage);
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   return (
     <>

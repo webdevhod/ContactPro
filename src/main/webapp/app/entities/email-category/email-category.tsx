@@ -2,7 +2,7 @@ import React, { MouseEvent, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getEntities as getContacts } from '../contact/contact.reducer';
-import { getEntity, updateEntity } from './email-category-view-model.reducer';
+import { getEntity, updateEntity, reset } from './email-category-view-model.reducer';
 import { ICategory } from 'app/shared/model/category.model';
 import { IContact } from 'app/shared/model/contact.model';
 import Select from 'react-select';
@@ -21,6 +21,7 @@ const EmailCategory = () => {
   const [body, setBody] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const navigate = useNavigate();
+  const [loaded, setLoaded] = useState(false);
 
   const handleClose = () => {
     navigate('/category');
@@ -69,6 +70,16 @@ const EmailCategory = () => {
       setEmailSubmitted(false);
     }
   }, [updateSuccess]);
+
+  useEffect(() => {
+    if (loaded && errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+    if (!loaded) {
+      setLoaded(true);
+    }
+  }, [errorMessage]);
 
   return (
     <>

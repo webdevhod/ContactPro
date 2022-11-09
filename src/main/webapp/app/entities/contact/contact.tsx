@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from 'react';
-// import InfiniteScroll from 'react-infinite-scroll-component';
-// import { ValidatedField, ValidatedForm } from 'react-jhipster';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Link, useLocation } from 'react-router-dom';
-// import { Button, Table } from 'reactstrap';
-// import { openFile, byteSize, Translate, TextFormat, getSortState } from 'react-jhipster';
 import { getSortState } from 'react-jhipster';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
-// import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { ASC, DESC, ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { ICategory } from 'app/shared/model/category.model';
-// import { IContact } from 'app/shared/model/contact.model';
 import { getEntities, reset } from './contact.reducer';
 import { getEntities as getCategories } from 'app/entities/category/category.reducer';
 import { IContact } from 'app/shared/model/contact.model';
@@ -24,7 +15,6 @@ export const Contact = () => {
   const dispatch = useAppDispatch();
 
   const location = useLocation();
-  // const navigate = useNavigate();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
@@ -36,9 +26,6 @@ export const Contact = () => {
   const categories = useAppSelector(state => state.category.entities);
   const contactList = useAppSelector(state => state.contact.entities);
   const loading = useAppSelector(state => state.contact.loading);
-  // const totalItems = useAppSelector(state => state.contact.totalItems);
-  // const links = useAppSelector(state => state.contact.links);
-  // const entity = useAppSelector(state => state.contact.entity);
   const updateSuccess = useAppSelector(state => state.contact.updateSuccess);
 
   const getAllEntities = () => {

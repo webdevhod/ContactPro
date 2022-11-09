@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntity, deleteEntity } from './category.reducer';
+import { getEntity, deleteEntity, reset } from './category.reducer';
 
 export const CategoryDeleteDialog = () => {
   const dispatch = useAppDispatch();
 
-  const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams<'id'>();
 
@@ -38,6 +37,15 @@ export const CategoryDeleteDialog = () => {
   const confirmDelete = () => {
     dispatch(deleteEntity(categoryEntity.id));
   };
+
+  const errorMessage = useAppSelector(state => state.category.errorMessage);
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   return (
     <Modal isOpen toggle={handleClose}>

@@ -27,11 +27,7 @@ export const getEntity = createAsyncThunk(
   'emailCategoryViewModel/fetch_entity',
   async (id: string | number) => {
     const requestUrl = `${apiUrl}/${id}`;
-    const promise = axios.get<IEmailCategoryViewModel>(requestUrl);
-    console.log(requestUrl);
-    console.log('promise');
-    console.log(promise);
-    return promise;
+    return axios.get<IEmailCategoryViewModel>(requestUrl);
   },
   { serializeError: serializeAxiosError }
 );

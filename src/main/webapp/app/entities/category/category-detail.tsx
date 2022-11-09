@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import { TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,16 +8,24 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntity } from './category.reducer';
+import { getEntity, reset } from './category.reducer';
 
 export const CategoryDetail = () => {
-  const dispatch = useAppDispatch();
-
   const { id } = useParams<'id'>();
+  const dispatch = useAppDispatch();
+  const errorMessage = useAppSelector(state => state.category.errorMessage);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getEntity({ id }));
   }, []);
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   const categoryEntity = useAppSelector(state => state.category.entity);
   return (

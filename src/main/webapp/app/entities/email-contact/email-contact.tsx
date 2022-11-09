@@ -2,7 +2,7 @@ import React, { useState, useEffect, MouseEvent } from 'react';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { getEntity, updateEntity } from '../email-contact-view-model/email-contact-view-model.reducer';
+import { getEntity, updateEntity, reset } from '../email-contact-view-model/email-contact-view-model.reducer';
 import { IEmailData } from 'app/shared/model/email-data.model';
 import { IContact } from 'app/shared/model/contact.model';
 import { toast } from 'react-toastify';
@@ -25,6 +25,7 @@ const EmailContact = () => {
   const [lastName, setLastName] = useState('');
   const [groupName, setGroupName] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const navigate = useNavigate();
 
@@ -82,6 +83,16 @@ const EmailContact = () => {
     setEmailSubmitted(true);
     dispatch(updateEntity(entity));
   };
+
+  useEffect(() => {
+    if (loaded && errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+    if (!loaded) {
+      setLoaded(true);
+    }
+  }, [errorMessage]);
 
   return (
     <>

@@ -2,23 +2,21 @@ import React, { useState, useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, TextFormat, getSortState } from 'react-jhipster';
+import { TextFormat, getSortState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
+import { APP_DATE_FORMAT } from 'app/config/constants';
+import { ASC, DESC, ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { ICategory } from 'app/shared/model/category.model';
 import { getEntities, reset } from './category.reducer';
 
 export const Category = () => {
   const dispatch = useAppDispatch();
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
@@ -27,9 +25,7 @@ export const Category = () => {
 
   const categoryList = useAppSelector(state => state.category.entities);
   const loading = useAppSelector(state => state.category.loading);
-  const totalItems = useAppSelector(state => state.category.totalItems);
   const links = useAppSelector(state => state.category.links);
-  const entity = useAppSelector(state => state.category.entity);
   const updateSuccess = useAppSelector(state => state.category.updateSuccess);
 
   const getAllEntities = () => {

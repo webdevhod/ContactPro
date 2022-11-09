@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getContacts } from 'app/entities/contact/contact.reducer';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { IContact } from 'app/shared/model/contact.model';
-import { createEntity, getEntity, updateEntity } from './category.reducer';
+import { createEntity, getEntity, updateEntity, reset } from './category.reducer';
 
 export const CategoryUpdate = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +24,7 @@ export const CategoryUpdate = () => {
   const users = useAppSelector(state => state.userManagement.users);
   const contacts = useAppSelector(state => state.contact.entities);
   const categoryEntity = useAppSelector(state => state.category.entity);
+  const errorMessage = useAppSelector(state => state.category.errorMessage);
   const loading = useAppSelector(state => state.category.loading);
   const updating = useAppSelector(state => state.category.updating);
   const updateSuccess = useAppSelector(state => state.category.updateSuccess);
@@ -58,6 +59,13 @@ export const CategoryUpdate = () => {
       handleClose();
     }
   }, [updateSuccess]);
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   const saveEntity = values => {
     const entity = {

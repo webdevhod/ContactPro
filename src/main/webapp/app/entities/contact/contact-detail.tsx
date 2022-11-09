@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 import { openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntity } from './contact.reducer';
+import { getEntity, reset } from './contact.reducer';
 
 export const ContactDetail = () => {
   const dispatch = useAppDispatch();
@@ -17,6 +17,16 @@ export const ContactDetail = () => {
   useEffect(() => {
     dispatch(getEntity(id));
   }, []);
+
+  const errorMessage = useAppSelector(state => state.contact.errorMessage);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (errorMessage != null) {
+      dispatch(reset());
+      navigate('/404');
+    }
+  }, [errorMessage]);
 
   const contactEntity = useAppSelector(state => state.contact.entity);
   return (

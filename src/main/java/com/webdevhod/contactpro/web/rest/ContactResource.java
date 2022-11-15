@@ -83,9 +83,9 @@ public class ContactResource {
             throw new BadRequestAlertException("A new contact cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
-        User user = userService.getUserWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin().get()).get();
-        contact.setAppUser(user);
+        contact.setAppUser(getCurrentUser());
 
+        // loop through categories
         checkValidUser(contact);
 
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
@@ -341,13 +341,13 @@ public class ContactResource {
 
     private void checkValidUser(Contact contact, boolean eagerload) {
         User user = getCurrentUser();
-        if (contact.getAppUser().getId() != user.getId()) {
+        if (!contact.getAppUser().getId().equals(user.getId())) {
             throw new BadRequestAlertException("Current user and contact user do not match", ENTITY_NAME, "idsnotmatched");
         }
         if (eagerload) {
             for (Category category : contact.getCategories()) {
                 Category categoryFetched = categoryService.findOneById(category.getId()).get();
-                if (categoryFetched.getAppUser().getId() != user.getId()) {
+                if (!categoryFetched.getAppUser().getId().equals(user.getId())) {
                     throw new BadRequestAlertException("Current user and Category user do not match", ENTITY_NAME, "idsnotmatched");
                 }
             }

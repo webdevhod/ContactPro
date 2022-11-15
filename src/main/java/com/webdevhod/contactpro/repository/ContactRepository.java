@@ -20,6 +20,9 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
     @Query("select contact from Contact contact where contact.appUser.login = ?#{principal.username}")
     Page<Contact> findByAppUserIsCurrentUser(Pageable pageable);
 
+    @Query("select contact from Contact contact where contact.appUser.id = :id")
+    List<Contact> findAllById(@Param("id") Long id);
+
     default Optional<Contact> findOneWithEagerRelationships(Long id) {
         return this.findOneWithToOneRelationships(id);
     }

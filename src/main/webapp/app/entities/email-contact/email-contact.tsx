@@ -79,6 +79,7 @@ const EmailContact = () => {
         subject,
         body,
       },
+      id: contact.id,
     };
     setEmailSubmitted(true);
     dispatch(updateEntity(entity));

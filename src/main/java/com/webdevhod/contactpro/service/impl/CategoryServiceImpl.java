@@ -106,4 +106,9 @@ public class CategoryServiceImpl implements CategoryService {
     public Optional<Category> findOneWithEagerRelationships(Long id) {
         return categoryRepository.findOneWithEagerRelationships(id);
     }
+
+    @Override
+    public List<Category> findAllById(Long id) {
+        return categoryRepository.findAllById(id);
+    }
 }

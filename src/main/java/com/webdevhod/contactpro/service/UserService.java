@@ -2,6 +2,8 @@ package com.webdevhod.contactpro.service;
 
 import com.webdevhod.contactpro.config.Constants;
 import com.webdevhod.contactpro.domain.Authority;
+import com.webdevhod.contactpro.domain.Category;
+import com.webdevhod.contactpro.domain.Contact;
 import com.webdevhod.contactpro.domain.User;
 import com.webdevhod.contactpro.repository.AuthorityRepository;
 import com.webdevhod.contactpro.repository.UserRepository;
@@ -41,16 +43,23 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final ContactService contactService;
+    private final CategoryService categoryService;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        ContactService contactService,
+        CategoryService categoryService
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.contactService = contactService;
+        this.categoryService = categoryService;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -222,6 +231,18 @@ public class UserService {
         userRepository
             .findOneByLogin(login)
             .ifPresent(user -> {
+                System.out.println("user.getId()");
+                System.out.println(user.getId());
+                List<Category> categories = categoryService.findAllById(user.getId());
+                for (Category category : categories) {
+                    categoryService.delete(category.getId());
+                }
+
+                List<Contact> contacts = contactService.findAllById(user.getId());
+                for (Contact contact : contacts) {
+                    contactService.delete(contact.getId());
+                }
+
                 userRepository.delete(user);
                 this.clearUserCaches(user);
                 log.debug("Deleted User: {}", user);

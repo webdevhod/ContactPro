@@ -64,23 +64,22 @@ export const ContactUpdate = () => {
     }
   }, [updateSuccess]);
 
+  const reader = new FileReader();
+  reader.addEventListener(
+    'load',
+    () => {
+      let dataUrl = reader.result as string;
+      let phrase = ';base64,';
+      let index = dataUrl.indexOf(phrase) + phrase.length;
+      let imageString = dataUrl.substring(index);
+      setImageBase64(imageString);
+      let array = new Uint8Array(decode(imageString));
+      setImage(Array.from(array));
+    },
+    false
+  );
+
   useEffect(() => {
-    const reader = new FileReader();
-
-    reader.addEventListener(
-      'load',
-      () => {
-        let dataUrl = reader.result as string;
-        let phrase = ';base64,';
-        let index = dataUrl.indexOf(phrase) + phrase.length;
-        let imageString = dataUrl.substring(index);
-        setImageBase64(imageString);
-        let array = new Uint8Array(decode(imageString));
-        setImage(Array.from(array));
-      },
-      false
-    );
-
     if (imageFile) {
       setImageContentType(imageFile.type);
       reader.readAsDataURL(imageFile);

@@ -54,6 +54,7 @@ const EmailCategory = () => {
         subject,
         body,
       },
+      id: category.id,
     };
     setEmailSubmitted(true);
     dispatch(updateEntity(entity));

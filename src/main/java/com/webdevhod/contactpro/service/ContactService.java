@@ -72,4 +72,6 @@ public interface ContactService {
     void delete(Long id);
 
     Optional<Contact> findOneWithEagerRelationships(Long id);
+
+    List<Contact> findAllById(Long id);
 }

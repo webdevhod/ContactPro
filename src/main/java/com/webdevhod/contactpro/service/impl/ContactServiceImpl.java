@@ -140,4 +140,9 @@ public class ContactServiceImpl implements ContactService {
     public Optional<Contact> findOneWithEagerRelationships(Long id) {
         return contactRepository.findOneWithEagerRelationships(id);
     }
+
+    @Override
+    public List<Contact> findAllById(Long id) {
+        return contactRepository.findAllById(id);
+    }
 }

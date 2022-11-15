@@ -26,6 +26,9 @@ public interface CategoryRepository extends CategoryRepositoryWithBagRelationshi
     @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
     List<Category> findByAppUserIsCurrentUser();
 
+    @Query("select category from Category category where category.appUser.id = :id")
+    List<Category> findAllById(@Param("id") Long id);
+
     @Query("select category from Category category where category.appUser.login = ?#{principal.username}")
     Page<Category> findByAppUserIsCurrentUser(Pageable pageable);
 

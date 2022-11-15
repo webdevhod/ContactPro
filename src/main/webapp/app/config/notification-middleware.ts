@@ -75,6 +75,10 @@ export default () => next => action => {
             break;
           }
 
+          case 403:
+            toast.error('403: Forbidden');
+            break;
+
           case 404:
             addErrorAlert('Not found', 'error.url.not.found');
             break;

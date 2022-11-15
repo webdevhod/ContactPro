@@ -264,11 +264,11 @@ public class CategoryResource {
     private void checkValidUser(Long categoryId) {
         User user = getCurrentUser();
         Category category = categoryService.findOneWithEagerRelationships(categoryId).get();
-        if (category.getAppUser().getId() != user.getId()) {
+        if (!category.getAppUser().getId().equals(user.getId())) {
             throw new BadRequestAlertException("Current user and Category user do not match", ENTITY_NAME, "idsnotmatched");
         }
         for (Contact contact : category.getContacts()) {
-            if (contact.getAppUser().getId() != user.getId()) {
+            if (!contact.getAppUser().getId().equals(user.getId())) {
                 throw new BadRequestAlertException("Current user and Contact user do not match", ENTITY_NAME, "idsnotmatched");
             }
         }

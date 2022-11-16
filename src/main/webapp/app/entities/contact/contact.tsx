@@ -125,7 +125,6 @@ export const Contact = () => {
                 value="Search"
                 onClick={e => {
                   e.preventDefault();
-                  // setClicked(true);
                   getAllEntities();
                 }}
               />
@@ -158,56 +157,66 @@ export const Contact = () => {
         <div className="col-12 col-md-8">
           <div className="row row-cols-1 g-3">
             {contactList != null && contactList.length > 0
-              ? contactList.map((contact: IContact, i: number) => (
-                  <div key={i} className="col">
-                    <div className="card mb-3">
-                      <div className="row g-0">
-                        <div className="col-md-4 square-img-container">
-                          <img
-                            src={
-                              contact.imageContentType && contact.image
-                                ? `data:${contact.imageContentType};base64,${contact.image}`
-                                : '/content/img/DefaultContactImage.png'
-                            }
-                            className="square-img rounded-start"
-                            alt={`${contact.firstName} ${contact.lastName}`}
-                          />
-                        </div>
-                        <div className="col-md-8">
-                          <div className="card-body">
-                            <h5 className="card-title">{`${contact.firstName} ${contact.lastName}`}</h5>
-                            <div className="card-text">
-                              {contact.address1}
-                              <br />
-                              {contact.address2 ? contact.address2 : null}
-                              {contact.address2 ? <br /> : null}
-                              {contact.city}, {contact.state} {contact.zipCode}
-                            </div>
-                            <div className="card-text">
-                              <span className="fw-bold me-2">Phone:</span>
-                              {contact.phoneNumber}
-                            </div>
-                            <div className="card-text">
-                              <span className="fw-bold me-2">Email:</span>
-                              {contact.email}
-                            </div>
-                            <div className="fs-4 mt-5 d-flex gap-1">
-                              <Link className="me-3 editIcons" to={`${contact.id}/edit`}>
-                                <i className="bi bi-pencil-fill "></i>
-                              </Link>
-                              <Link className="me-3 editIcons" to={`/email-contact/${contact.id}`}>
-                                <i className="bi bi-envelope-fill "></i>
-                              </Link>
-                              <Link className="me-3 editIcons" to={`${contact.id}/delete`}>
-                                <i className="bi bi-trash-fill text-danger "></i>
-                              </Link>
+              ? [...contactList]
+                  .sort(function (a: IContact, b: IContact) {
+                    if (a.lastName.toLowerCase() < b.lastName.toLowerCase()) return -1;
+                    else if (a.lastName.toLowerCase() > b.lastName.toLowerCase()) return 1;
+                    else {
+                      if (a.firstName.toLowerCase() < b.firstName.toLowerCase()) return -1;
+                      else if (a.firstName.toLowerCase() > b.firstName.toLowerCase()) return 1;
+                    }
+                    return 0;
+                  })
+                  .map((contact: IContact, i: number) => (
+                    <div key={i} className="col">
+                      <div className="card mb-3">
+                        <div className="row g-0">
+                          <div className="col-md-4 square-img-container">
+                            <img
+                              src={
+                                contact.imageContentType && contact.image
+                                  ? `data:${contact.imageContentType};base64,${contact.image}`
+                                  : '/content/img/DefaultContactImage.png'
+                              }
+                              className="square-img rounded-start"
+                              alt={`${contact.firstName} ${contact.lastName}`}
+                            />
+                          </div>
+                          <div className="col-md-8">
+                            <div className="card-body">
+                              <h5 className="card-title">{`${contact.firstName} ${contact.lastName}`}</h5>
+                              <div className="card-text">
+                                {contact.address1}
+                                <br />
+                                {contact.address2 ? contact.address2 : null}
+                                {contact.address2 ? <br /> : null}
+                                {contact.city}, {contact.state} {contact.zipCode}
+                              </div>
+                              <div className="card-text">
+                                <span className="fw-bold me-2">Phone:</span>
+                                {contact.phoneNumber}
+                              </div>
+                              <div className="card-text">
+                                <span className="fw-bold me-2">Email:</span>
+                                {contact.email}
+                              </div>
+                              <div className="fs-4 mt-5 d-flex gap-1">
+                                <Link className="me-3 editIcons" to={`${contact.id}/edit`}>
+                                  <i className="bi bi-pencil-fill "></i>
+                                </Link>
+                                <Link className="me-3 editIcons" to={`/email-contact/${contact.id}`}>
+                                  <i className="bi bi-envelope-fill "></i>
+                                </Link>
+                                <Link className="me-3 editIcons" to={`${contact.id}/delete`}>
+                                  <i className="bi bi-trash-fill text-danger "></i>
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))
               : !loading && <h4 className="ps-3 pt-2 text-body">No contacts found</h4>}
           </div>
         </div>

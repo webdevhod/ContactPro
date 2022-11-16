@@ -7,6 +7,8 @@ import { ICategory } from 'app/shared/model/category.model';
 import { IContact } from 'app/shared/model/contact.model';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 const EmailCategory = () => {
   const { id } = useParams<'id'>();
@@ -22,12 +24,14 @@ const EmailCategory = () => {
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState(false);
+  const isGuest = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.GUEST]));
 
   const handleClose = () => {
     navigate('/category');
   };
 
   useEffect(() => {
+    dispatch(reset());
     dispatch(getEntity(id));
     dispatch(getContacts({}));
   }, []);
@@ -75,6 +79,9 @@ const EmailCategory = () => {
   useEffect(() => {
     if (loaded && errorMessage != null) {
       dispatch(reset());
+      if (isGuest) {
+        toast.error('Cannot email from demo account. Please sign up for a free user account.');
+      }
       navigate('/404');
     }
     if (!loaded) {

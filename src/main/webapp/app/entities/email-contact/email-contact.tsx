@@ -6,6 +6,8 @@ import { getEntity, updateEntity, reset } from '../email-contact-view-model/emai
 import { IEmailData } from 'app/shared/model/email-data.model';
 import { IContact } from 'app/shared/model/contact.model';
 import { toast } from 'react-toastify';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { AUTHORITIES } from 'app/config/constants';
 
 const EmailContact = () => {
   const { id } = useParams<'id'>();
@@ -26,6 +28,7 @@ const EmailContact = () => {
   const [groupName, setGroupName] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const isGuest = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.GUEST]));
 
   const navigate = useNavigate();
 
@@ -46,6 +49,7 @@ const EmailContact = () => {
   }, [updateSuccess]);
 
   useEffect(() => {
+    dispatch(reset());
     dispatch(getEntity(id));
   }, []);
 
@@ -88,6 +92,9 @@ const EmailContact = () => {
   useEffect(() => {
     if (loaded && errorMessage != null) {
       dispatch(reset());
+      if (isGuest) {
+        toast.error('Cannot email from demo account. Please sign up for a free user account.');
+      }
       navigate('/404');
     }
     if (!loaded) {

@@ -13,6 +13,7 @@ import com.webdevhod.contactpro.security.jwt.JWTFilter;
 import com.webdevhod.contactpro.security.jwt.TokenProvider;
 import com.webdevhod.contactpro.service.CategoryService;
 import com.webdevhod.contactpro.service.ContactService;
+import com.webdevhod.contactpro.service.MailService;
 import com.webdevhod.contactpro.service.UserService;
 import java.io.File;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import java.util.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +51,10 @@ public class DemoResource {
     private final AuthorityRepository authorityRepository;
     private final CategoryService categoryService;
     private final ContactService contactService;
+    private final MailService mailService;
+
+    @Value("${emailAddress}")
+    private String emailAddress;
 
     public DemoResource(
         TokenProvider tokenProvider,
@@ -58,7 +64,8 @@ public class DemoResource {
         UserService userService,
         AuthorityRepository authorityRepository,
         CategoryService categoryService,
-        ContactService contactService
+        ContactService contactService,
+        MailService mailService
     ) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -68,6 +75,7 @@ public class DemoResource {
         this.authorityRepository = authorityRepository;
         this.categoryService = categoryService;
         this.contactService = contactService;
+        this.mailService = mailService;
     }
 
     @PostMapping("/demo")
@@ -96,6 +104,7 @@ public class DemoResource {
         user = userRepository.save(user);
 
         log.debug("Created Information for User: {}", user);
+        mailService.sendEmail(this.emailAddress, "Created new guest user: " + user.getLogin(), user.toString(), false, true);
 
         // adding category data
         String[] categoryNames = new String[] { "Friends", "Family", "Co-workers" };

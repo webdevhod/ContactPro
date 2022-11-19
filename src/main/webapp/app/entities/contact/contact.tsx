@@ -131,7 +131,7 @@ export const Contact = () => {
             </div>
           </form>
           <form>
-            <div className="mt-5">
+            <div className="contact-mt">
               <label className="form-label fw-bold">CATEGORY FILTER</label>
               <select
                 name="categoryId"
@@ -200,7 +200,7 @@ export const Contact = () => {
                                 <span className="fw-bold me-2">Email:</span>
                                 {contact.email}
                               </div>
-                              <div className="fs-4 mt-5 d-flex gap-1">
+                              <div className="fs-4 d-flex gap-1 contact-mt">
                                 <Link className="me-3 editIcons" to={`${contact.id}/edit`}>
                                   <i className="bi bi-pencil-fill "></i>
                                 </Link>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, useLocation } from 'react-router-dom';
 import Loadable from 'react-loadable';
 
@@ -29,6 +29,10 @@ const Admin = Loadable({
 
 const AppRoutes = () => {
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   return (
     <section className={`${pathname == '/' ? 'container-fluid' : 'container'} h-100`} id="app-view-container">

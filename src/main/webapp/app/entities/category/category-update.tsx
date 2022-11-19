@@ -143,19 +143,17 @@ export const CategoryUpdate = () => {
               />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/category" replace color="secondary">
                 <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">Back</span>
+                <span className="d-inline">&nbsp;Back</span>
               </Button>
               &nbsp;
               <Button tag={Link} to={`/email-category/${id}`} data-cy="entityCreateEmailButton" replace className="ms-1" color="info">
                 <FontAwesomeIcon icon={faEnvelope} />
-                &nbsp;
-                <span className="d-none d-md-inline">Email</span>
+                <span className="d-inline">&nbsp;Email</span>
               </Button>
               &nbsp;
               <Button id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating} className="ms-1" color="primary">
                 <FontAwesomeIcon icon="save" />
-                &nbsp; Save
+                <span className="d-inline">&nbsp;Save</span>
               </Button>
             </ValidatedForm>
           )}

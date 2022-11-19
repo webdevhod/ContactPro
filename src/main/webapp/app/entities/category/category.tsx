@@ -99,7 +99,8 @@ export const Category = () => {
         Categories
         <div className="d-flex justify-content-end">
           <Button className="rounded-pill me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
+            <FontAwesomeIcon icon="sync" spin={loading} />
+            <span className="d-none d-md-inline">&nbsp; Refresh list</span>
           </Button>
           <Link
             to="/category/new"
@@ -108,7 +109,7 @@ export const Category = () => {
             data-cy="entityCreateButton"
           >
             <FontAwesomeIcon icon="plus" />
-            &nbsp; Create a new Category
+            <span className="d-none d-md-inline">&nbsp; Create a new Category</span>
           </Link>
         </div>
       </h2>

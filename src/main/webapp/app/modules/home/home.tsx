@@ -19,17 +19,19 @@ export const Home = () => {
             <br />
             <strong>Built with pride using cutting edge tech:</strong>
             <br />
-            <i className="devicon-spring-plain-wordmark colored icon"></i>
-            <i className="devicon-java-plain-wordmark colored icon"></i>
-            <i className="devicon-react-original-wordmark colored icon"></i>
-            <i className="devicon-javascript-plain colored icon"></i>
-            <i className="devicon-postgresql-plain-wordmark colored icon"></i>
-            <i className="devicon-bootstrap-plain-wordmark colored icon"></i>
+            <div className="d-flex flex-wrap mt-1">
+              <i className="devicon-spring-plain-wordmark colored icon"></i>
+              <i className="devicon-java-plain-wordmark colored icon"></i>
+              <i className="devicon-react-original-wordmark colored icon"></i>
+              <i className="devicon-javascript-plain colored icon"></i>
+              <i className="devicon-postgresql-plain-wordmark colored icon"></i>
+              <i className="devicon-bootstrap-plain-wordmark colored icon"></i>
+            </div>
           </div>
           {!isAuthenticated ? (
             <div className="text-start mt-5">
               <button
-                className="btn btn-lg btn-primary rounded-pill w-25"
+                className="btn btn-lg btn-primary rounded-pill demo-button"
                 onClick={() => {
                   dispatch(demo());
                 }}

@@ -326,7 +326,7 @@ export const ContactUpdate = () => {
                       handleChange(e, setZipCode);
                     }}
                   />
-                  <div className="col-12 col-lg-6">
+                  <div className="col-12 col-lg-6 mb-3">
                     <Label htmlFor="categories">Categories</Label>
                     <Select
                       id="contact-categories"

@@ -13,6 +13,9 @@ const Footer = () => (
             <img src="content/img/ContactPro.png" height="50" />
           </div>
           <div className="col-12 col-md d-flex justify-content-center justify-content-md-end">
+            <a href="https://github.com/webdevhod/ContactPro" className="socialicons me-2" target="_blank">
+              <i className="bi bi-github"></i>
+            </a>
             <a href="https://www.linkedin.com/in/daniel-ho-6305193b/" className="socialicons" target="_blank">
               <i className="bi bi-linkedin p-2 "></i>
             </a>

@@ -51,8 +51,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // @formatter:off
         http
-            .cors()
-        .and()
+            .cors().disable()
             .csrf()
             .ignoringAntMatchers("/h2-console/**")
             .disable()

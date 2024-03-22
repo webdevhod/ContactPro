@@ -51,6 +51,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // @formatter:off
         http
+            .cors()
+        .and()
             .csrf()
             .ignoringAntMatchers("/h2-console/**")
             .disable()
@@ -67,6 +69,9 @@ public class SecurityConfiguration {
                 .permissionsPolicy().policy("camera=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()")
             .and()
                 .frameOptions().sameOrigin()
+        .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
             .authorizeRequests()
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
